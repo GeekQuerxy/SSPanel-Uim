@@ -151,7 +151,7 @@ class User extends Model
                 $this->attributes['id'] . '|' . $this->attributes['passwd']
             )->toString();
         }
-        
+
         return $uuid;
     }
 
@@ -920,10 +920,10 @@ class User extends Model
         $lastday = (($this->u + $this->d) - $this->last_day_t) / 1024 / 1024;
         switch ($this->sendDailyMail) {
             case 0:
-                return;
+                break;
             case 1:
                 echo 'Send daily mail to user: ' . $this->id;
-                    $this->sendMail(
+                $this->sendMail(
                     $_ENV['appName'] . '-每日流量报告以及公告',
                     'news/daily-traffic-report.tpl',
                     [
