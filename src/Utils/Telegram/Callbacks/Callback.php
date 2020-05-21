@@ -558,7 +558,7 @@ class Callback
                     'callback_data' => 'user.edit.obfs'
                 ],
                 [
-                    'text'          => '每日邮件接收',
+                    'text'          => '每日流量报告',
                     'callback_data' => 'user.edit.sendemail'
                 ],
             ],
@@ -786,20 +786,29 @@ class Callback
                 $keyboard = [
                     [
                         [
-                            'text'          => '更改开启/关闭',
+                            'text'          => '切换邮件/Bot/关闭',
                             'callback_data' => 'user.edit.sendemail.update'
                         ]
                     ],
                     $back[0]
                 ];
+                $sendDailyMailTitle = [
+                    0 => '不发送',
+                    1 => '邮件',
+                    2 => 'Bot',
+                ];
                 $op_3 = $Operate[3];
                 switch ($op_3) {
                     case 'update':
-                        $this->User->sendDailyMail = ($this->User->sendDailyMail == 0 ? 1 : 0);
+                        $this->User->sendDailyMail++;
+                        if ($this->User->sendDailyMail >= 3 || $this->User->sendDailyMail < 0) {
+                            $this->User->sendDailyMail = 0;
+                        }
+
                         if ($this->User->save()) {
                             $text  = '设置更改成功，每日邮件接收当前设置为：';
                             $text .= '<strong>';
-                            $text .= ($this->User->sendDailyMail == 0 ? '不发送' : '发送');
+                            $text .= $sendDailyMailTitle[$this->User->sendDailyMail];
                             $text .= '</strong>';
                         } else {
                             $text = '发生错误.';
@@ -808,7 +817,7 @@ class Callback
                     default:
                         $text  = '每日邮件接收当前设置为：';
                         $text .= '<strong>';
-                        $text .= ($this->User->sendDailyMail == 0 ? '不发送' : '发送');
+                        $text .= $sendDailyMailTitle[$this->User->sendDailyMail];
                         $text .= '</strong>';
                         break;
                 }
