@@ -17,7 +17,10 @@ class View
         $user = Auth::getUser();
 
         if ($user->isLogin) {
-            $theme = $user->theme;
+            $theme = (is_dir(BASE_PATH . '/resources/views/' . $user->theme)
+                ? $user->theme
+                : $_ENV['theme']
+            );
         } else {
             $theme = $_ENV['theme'];
         }
