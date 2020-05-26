@@ -801,10 +801,9 @@ class Callback
                 switch ($op_3) {
                     case 'update':
                         $this->User->sendDailyMail++;
-                        if ($this->User->sendDailyMail >= 3 || $this->User->sendDailyMail < 0) {
+                        if ($this->User->sendDailyMail >= 3 || $this->User->sendDailyMail < 0 || ($this->User->sendDailyMail == 2 && $_ENV['enable_telegram'] === false)) {
                             $this->User->sendDailyMail = 0;
                         }
-
                         if ($this->User->save()) {
                             $text  = '设置更改成功，每日邮件接收当前设置为：';
                             $text .= '<strong>';
