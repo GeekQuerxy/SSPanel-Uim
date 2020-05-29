@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Controllers\LinkController;
 use App\Utils\{
     Tools,
     Hash,
@@ -956,5 +957,21 @@ class User extends Model
         return (!Tools::is_protocol_relay($this)
             ? []
             : Relay::where('user_id', $this->id)->orwhere('user_id', 0)->orderBy('id', 'asc')->get());
+    }
+
+    /**
+     * 获取订阅 token
+     */
+    public function getSubscribeToken()
+    {
+        return LinkController::GenerateSSRSubCode($this->id, 0);
+    }
+
+    /**
+     * 获取订阅链接
+     */
+    public function getSubscribeLink()
+    {
+        return $_ENV['subUrl'] . $this->getSubscribeToken();;
     }
 }
