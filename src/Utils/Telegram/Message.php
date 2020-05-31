@@ -203,7 +203,7 @@ class Message
                 );
                 return;
             }
-            if ($_ENV['enable_welcome_message'] === true) {
+            if (Config::getconfig('Telegram.bool.WelcomeMessage') === true) {
                 $text = ($NewUser->class >= 1 ? '欢迎 VIP' . $NewUser->class . ' 用户 ' . $Member['name'] . '回到组织.' : '欢迎 ' . $Member['name']);
                 $this->replyWithMessage(
                     [

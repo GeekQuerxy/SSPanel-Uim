@@ -56,7 +56,7 @@ class UnbindCommand extends Command
                 // 回送信息
                 $this->replyWithMessage(
                     [
-                        'text'       => $_ENV['user_not_bind_reply'],
+                        'text'       => Config::getconfig('Telegram.string.user_not_bind_reply'),
                         'parse_mode' => 'Markdown',
                     ]
                 );

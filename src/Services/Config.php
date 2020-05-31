@@ -12,7 +12,7 @@ class Config
         return $_ENV[$key];
     }
 
-    public static function getconfig($key)
+    public static function getconfig(string $key)
     {
         $value = GConfig::where('key', '=', $key)->first();
         if ($value === null) {
@@ -31,7 +31,7 @@ class Config
             'max_port'                => $_ENV['max_port'],
             'checkinMin'              => $_ENV['checkinMin'],
             'checkinMax'              => $_ENV['checkinMax'],
-            'invite_price'            => $_ENV['invite_price'],
+            'invite_price'            => (int) self::getconfig('Register.string.invite_price'),
             'invite_get_money'        => (int) self::getconfig('Register.string.defaultInvite_get_money'),
             'code_payback'            => $_ENV['code_payback'],
             'invite_gift'             => $_ENV['invite_gift'],
@@ -53,7 +53,7 @@ class Config
             'register_mode'           => self::getconfig('Register.string.Mode'),
             'enable_flag'             => $_ENV['enable_flag'],
             'enable_kill'             => $_ENV['enable_kill'],
-            'custom_invite_price'     => $_ENV['custom_invite_price'],
+            'custom_invite_price'     => (int) self::getconfig('Register.string.custom_invite_price'),
             'captcha_provider'        => $_ENV['captcha_provider'],
             'enable_email_verify'     => self::getconfig('Register.bool.Enable_email_verify'),
 

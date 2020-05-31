@@ -524,7 +524,7 @@ class UserController extends BaseController
 
     public function buyInvite($request, $response, $args)
     {
-        $price = $_ENV['invite_price'];
+        $price = (int) Config::getconfig('Register.string.invite_price');
         $num = $request->getParam('num');
         $num = trim($num);
 
@@ -559,7 +559,7 @@ class UserController extends BaseController
 
     public function customInvite($request, $response, $args)
     {
-        $price = $_ENV['custom_invite_price'];
+        $price = (int) Config::getconfig('Register.string.custom_invite_price');
         $customcode = $request->getParam('customcode');
         $customcode = trim($customcode);
 

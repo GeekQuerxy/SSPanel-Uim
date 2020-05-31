@@ -18,7 +18,8 @@ class TelegramProcess
         '?mu=1' => 'SSR单端口订阅',
         '?mu=3' => 'SS/SSD订阅',
         '?mu=2' => 'V2ray订阅',
-        '?mu=4' => 'Clash订阅'];
+        '?mu=4' => 'Clash订阅'
+    ];
 
     private static function callback_bind_method($bot, $callback)
     {
@@ -140,7 +141,7 @@ class TelegramProcess
                             $imtype = 4; // Telegram
                             $imvalue = $username;
                             $name = $username;
-                            if ( !$name ) {
+                            if (!$name) {
                                 $name = 'telegram.' . $telegram_id;
                             }
                             $code = 0; // TODO: Refer Code
@@ -279,7 +280,7 @@ class TelegramProcess
                             $reply['message'] = '不约，叔叔我们不约';
                         }
                     }
-                    if ($message->getNewChatMember() != null && $_ENV['enable_welcome_message'] == true) {
+                    if ($message->getNewChatMember() != null && Config::getconfig('Telegram.bool.WelcomeMessage') == true) {
                         $reply['message'] = '欢迎 ' . $message->getNewChatMember()->getFirstName() . ' ' . $message->getNewChatMember()->getLastName();
                     } else {
                         $reply['message'] = null;

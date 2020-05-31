@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Models\User;
+use App\Services\Config;
 use App\Utils\Telegram;
 use App\Utils\DatatablesHelper;
 use Ozdemir\Datatables\Datatables;
@@ -94,7 +95,7 @@ class FinanceMail extends Command
             );
         }
 
-        if ($_ENV['finance_public']) {
+        if (Config::getconfig('Telegram.bool.FinancePublic')) {
             Telegram::Send(
                 '新鲜出炉的财务日报~' . PHP_EOL .
                 '昨日总收入笔数:' . $income_count . PHP_EOL .
@@ -157,7 +158,7 @@ class FinanceMail extends Command
             );
         }
 
-        if ($_ENV['finance_public']) {
+        if (Config::getconfig('Telegram.bool.FinancePublic')) {
             Telegram::Send(
                 '新鲜出炉的财务周报~' . PHP_EOL .
                 '上周总收入笔数:' . $income_count . PHP_EOL .
@@ -200,7 +201,7 @@ class FinanceMail extends Command
             );
         }
 
-        if ($_ENV['finance_public']) {
+        if (Config::getconfig('Telegram.bool.FinancePublic')) {
             Telegram::Send(
                 '新鲜出炉的财务月报~' . PHP_EOL .
                 '上月总收入笔数:' . $income_count . PHP_EOL .

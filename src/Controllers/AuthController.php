@@ -384,14 +384,14 @@ class AuthController extends BaseController
         $user->protocol_param       = Config::getconfig('Register.string.defaultProtocol_param');
         $user->obfs                 = Config::getconfig('Register.string.defaultObfs');
         $user->obfs_param           = Config::getconfig('Register.string.defaultObfs_param');
-        $user->forbidden_ip         = $_ENV['reg_forbidden_ip'];
-        $user->forbidden_port       = $_ENV['reg_forbidden_port'];
+        $user->forbidden_ip         = Config::getconfig('Register.string.reg_forbidden_ip');
+        $user->forbidden_port       = Config::getconfig('Register.string.reg_forbidden_port');
         $user->im_type              = $imtype;
         $user->im_value             = $antiXss->xss_clean($imvalue);
         $user->transfer_enable      = Tools::toGB((int) Config::getconfig('Register.string.defaultTraffic'));
         $user->invite_num           = (int) Config::getconfig('Register.string.defaultInviteNum');
-        $user->auto_reset_day       = $_ENV['reg_auto_reset_day'];
-        $user->auto_reset_bandwidth = $_ENV['reg_auto_reset_bandwidth'];
+        $user->auto_reset_day       = Config::getconfig('Register.string.reg_auto_reset_day');
+        $user->auto_reset_bandwidth = Config::getconfig('Register.string.reg_auto_reset_bandwidth');
         $user->money                = 0;
         $user->sendDailyMail        = Config::getconfig('Register.bool.send_dailyEmail');
 
@@ -419,7 +419,7 @@ class AuthController extends BaseController
         $user->plan             = 'A';
         $user->theme            = $_ENV['theme'];
 
-        $groups                 = explode(',', $_ENV['random_group']);
+        $groups                 = explode(',', Config::getconfig('Register.string.random_group'));
 
         $user->node_group       = $groups[array_rand($groups)];
 

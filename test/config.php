@@ -77,21 +77,11 @@ $_ENV['backup_notify']      = false;                            //备份通知�
 
 
 //用户注册设置-----------------------------------------------------------------------------------------
-$_ENV['reg_auto_reset_day']        = 0;                         //注册时的流量重置日，0为不重置
-$_ENV['reg_auto_reset_bandwidth']  = 0;                         //需要重置的流量，0为不重置
-$_ENV['random_group']              = '0';                       //注册时随机分组，注册时随机分配到的分组，多个分组请用英文半角逗号分隔
-
-$_ENV['reg_forbidden_ip']          = '127.0.0.0/8,::1/128';     //注册时默认禁止访问IP列表，半角英文逗号分割
 $_ENV['min_port']                  = 10000;                     //用户端口池最小值
 $_ENV['max_port']                  = 65535;                     //用户端口池最大值
-$_ENV['reg_forbidden_port']        = '';                        //注册时默认禁止访问端口列表，半角英文逗号分割，支持端口段
 
 $_ENV['mu_suffix']                 = 'microsoft.com';           //单端口多用户混淆参数后缀，可以随意修改，但请保持前后端一致
 $_ENV['mu_regex']                  = '%5m%id.%suffix';          //单端口多用户混淆参数表达式，%5m代表取用户特征 md5 的前五位，%id 代表用户id, %suffix 代表上面这个后缀。
-
-#邀请链接
-$_ENV['invite_price']              = -1;                        //用户购买邀请码所需要的价格，价格小于0时视为不开放购买
-$_ENV['custom_invite_price']       = -1;                        //用户定制邀请码所需要的价格，价格小于0时视为不开放购买
 
 
 //已注册用户设置---------------------------------------------------------------------------------------
@@ -203,10 +193,6 @@ $_ENV['telegram_bot']                       = '_bot';       //Telegram 机器人
 $_ENV['telegram_group_quiet']               = false;        //Telegram 机器人在群组中不回应
 $_ENV['telegram_request_token']             = '';           //Telegram 机器人请求Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
 
-# 通用
-$_ENV['finance_public']                     = true;         //财务报告是否向群公开
-$_ENV['enable_welcome_message']             = true;         //机器人发送欢迎消息
-
 # 图灵
 $_ENV['enable_tuling']                      = false;         //是否开启图灵机器人
 $_ENV['tuling_apikey']                      = '';            //图灵机器人API Key
@@ -249,9 +235,6 @@ $_ENV['remark_user_option_node_speedlimit'] = ['限速'];                    //�
 $_ENV['remark_user_option_node_connector']  = ['连接数', '客户端'];         //用户搜索字段 node_connector 的别名，可多个，格式为 PHP 数组
 
 $_ENV['enable_user_email_group_show']       = false;                      //开启在群组搜寻用户信息时显示用户完整邮箱，关闭则会对邮箱中间内容打码，如 g****@gmail.com
-$_ENV['user_not_bind_reply']                = '您未绑定本站账号，您可以进入网站的 **资料编辑**，在右下方绑定您的账号.';                      //未绑定账户的回复
-$_ENV['telegram_general_pricing']           = '产品介绍.';                  //面向游客的产品介绍
-$_ENV['telegram_general_terms']             = '服务条款.';                  //面向游客的服务条款
 
 
 //沟通设置--------------------------------------------------------------------------------------------

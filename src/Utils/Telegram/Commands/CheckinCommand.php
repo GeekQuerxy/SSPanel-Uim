@@ -3,6 +3,7 @@
 namespace App\Utils\Telegram\Commands;
 
 use App\Models\User;
+use App\Services\Config;
 use App\Utils\Telegram\TelegramTools;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
@@ -66,7 +67,7 @@ class CheckinCommand extends Command
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'       => $_ENV['user_not_bind_reply'],
+                    'text'       => Config::getconfig('Telegram.string.user_not_bind_reply'),
                     'parse_mode' => 'Markdown',
                 ]
             );

@@ -38,12 +38,11 @@ class DefaultConfig
      *
      * @param string $key
      */
-    public static function firstOrCreate(string $key):? GConfig
+    public static function firstOrCreate(string $key): ?GConfig
     {
         return (self::create($key)
             ? GConfig::where('key', '=', $key)->first()
-            : null
-        );
+            : null);
     }
 
     /**
@@ -74,7 +73,7 @@ class DefaultConfig
      *
      * @param string $key 键名
      */
-    public static function configs(string $key = null):? array
+    public static function configs(string $key = null): ?array
     {
         $configs = [
             // Telegram 部分
@@ -220,6 +219,37 @@ class DefaultConfig
                 'comment'       => '可用变量：' . PHP_EOL . '[节点名称] %node_name%',
             ],
 
+            'Telegram.bool.WelcomeMessage' => [
+                'type'          => 'bool',
+                'value'         => 1,
+                'name'          => '开启 TG 机器人新入群发送欢迎消息',
+                'comment'       => '',
+            ],
+            'Telegram.bool.FinancePublic' => [
+                'type'          => 'bool',
+                'value'         => 1,
+                'name'          => '开启财务报告发送至 TG 群',
+                'comment'       => '',
+            ],
+            'Telegram.string.user_not_bind_reply' => [
+                'type'          => 'string',
+                'value'         => '您未绑定本站账号，您可以进入网站的 **资料编辑**，在右下方绑定您的账号.',
+                'name'          => 'Bot 对未绑定账户用户的回复',
+                'comment'       => '',
+            ],
+            'Telegram.string.telegram_general_terms' => [
+                'type'          => 'string',
+                'value'         => '服务条款.',
+                'name'          => 'Bot 面向游客的服务条款',
+                'comment'       => '',
+            ],
+            'Telegram.string.telegram_general_pricing' => [
+                'type'          => 'string',
+                'value'         => '产品介绍.',
+                'name'          => 'Bot 面向游客的产品介绍',
+                'comment'       => '',
+            ],
+
 
             // 注册设置
             'Register.string.Mode' => [
@@ -230,13 +260,13 @@ class DefaultConfig
             ],
             'Register.bool.Enable_email_verify' => [
                 'type'          => 'bool',
-                'value'         => '0',
+                'value'         => 0,
                 'name'          => '是否启用注册邮箱验证码',
                 'comment'       => '',
             ],
             'Register.bool.send_dailyEmail' => [
                 'type'          => 'bool',
-                'value'         => '1',
+                'value'         => 1,
                 'name'          => '注册时是否开启每日邮件',
                 'comment'       => '',
             ],
@@ -330,6 +360,52 @@ class DefaultConfig
                 'name'          => '通过邀请链接注册获得奖励',
                 'comment'       => '新用户通过私人邀请链接注册时，获得奖励金额（作为初始资金）',
             ],
+
+            'Register.string.invite_price' => [
+                'type'          => 'string',
+                'value'         => '-1',
+                'name'          => '用户购买邀请码所需要的价格',
+                'comment'       => '价格小于 0 时视为不开放购买',
+            ],
+            'Register.string.custom_invite_price' => [
+                'type'          => 'string',
+                'value'         => '-1',
+                'name'          => '用户定制邀请码所需要的价格',
+                'comment'       => '价格小于 0 时视为不开放购买',
+            ],
+
+            'Register.string.reg_auto_reset_day' => [
+                'type'          => 'string',
+                'value'         => '0',
+                'name'          => '注册时的流量重置日',
+                'comment'       => '0 为不重置',
+            ],
+            'Register.string.reg_auto_reset_bandwidth' => [
+                'type'          => 'string',
+                'value'         => '0',
+                'name'          => '注册时的每月重置流量',
+                'comment'       => '单位：GB',
+            ],
+
+            'Register.string.reg_forbidden_ip' => [
+                'type'          => 'string',
+                'value'         => '127.0.0.0/8,::1/128',
+                'name'          => '注册时默认禁止访问 IP 列表',
+                'comment'       => '半角英文逗号分割',
+            ],
+            'Register.string.reg_forbidden_port' => [
+                'type'          => 'string',
+                'value'         => '',
+                'name'          => '注册时默认禁止访问端口列表',
+                'comment'       => '半角英文逗号分割，支持端口段',
+            ],
+
+            'Register.string.random_group' => [
+                'type'          => 'string',
+                'value'         => '0',
+                'name'          => '注册时随机分组',
+                'comment'       => '注册时随机分配到的分组，多个分组请用英文半角逗号分隔',
+            ],
         ];
 
         $addDefaultFields = [
@@ -366,7 +442,7 @@ class DefaultConfig
      *
      * @param string $key 键名
      */
-    public static function default_value(string $key):? array
+    public static function default_value(string $key): ?array
     {
         return self::configs($key);
     }

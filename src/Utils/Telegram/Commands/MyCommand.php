@@ -71,7 +71,7 @@ class MyCommand extends Command
             // 回送信息
             $response = $this->replyWithMessage(
                 [
-                    'text'                  => $_ENV['user_not_bind_reply'],
+                    'text'                  => Config::getconfig('Telegram.string.user_not_bind_reply'),
                     'reply_to_message_id'   => $MessageID,
                     'parse_mode'            => 'Markdown',
                 ]
