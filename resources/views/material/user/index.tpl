@@ -447,6 +447,10 @@ table tr td:first-child {
 												<p><span class="icon icon-lg text-white">filter_3</span> [ V2RayN ]：
 													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['v2ray']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
 												</p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_4</span> [ Trojan ]：
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['trojan']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
+												</p>
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_windows">
@@ -536,7 +540,7 @@ table tr td:first-child {
                                                         <a id="win_v2rayn" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#win_v2rayn","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_6</span> Clash for Windows - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_6</span> Clash for Windows - [ SS/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/Clash-Windows.7z"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -554,7 +558,7 @@ table tr td:first-child {
                                                         <a class="btn-dl" href="clash://install-config?url={urlencode($subInfo['clash'])}"><i class="material-icons icon-sm">send</i> 配置一键导入</a>
                                                     </p>
                                             	<hr/>
-												<p><span class="icon icon-lg text-white">filter_7</span> ClashR for Windows - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_7</span> ClashR for Windows - [ SS/SSR/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="#"><i class="material-icons icon-sm">cloud_download</i> 暂无下载</a>
@@ -577,7 +581,7 @@ table tr td:first-child {
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_mac">
-												<p><span class="icon icon-lg text-white">filter_1</span> Surge - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> Surge - [ SS/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="https://nssurge.com/mac/v3/Surge-latest.zip"><i class="material-icons icon-sm">cloud_download</i> 官方下载</a>
@@ -597,7 +601,7 @@ table tr td:first-child {
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['surge2']}"><i class="material-icons icon-sm">send</i> 拷贝 2.x 托管链接</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_2</span> ClashX - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_2</span> ClashX - [ SS/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/ClashX.dmg"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -615,7 +619,7 @@ table tr td:first-child {
                                                         <a class="btn-dl" href="clash://install-config?url={urlencode($subInfo['clash'])}"><i class="material-icons icon-sm">send</i> 配置一键导入</a>
                                                     </p>
                                                 <hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> ClashXR - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> ClashXR - [ SS/SSR/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="#"><i class="material-icons icon-sm">cloud_download</i> 暂无下载</a>
@@ -698,7 +702,7 @@ table tr td:first-child {
 												<hr/>
 												{/if}
 											{/if}
-												<p><span class="icon icon-lg text-white">filter_1</span> Surge - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_1</span> Surge - [ SS/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="https://itunes.apple.com/us/app/surge-3/id1442620678?ls=1&mt=8"><i class="material-icons icon-sm">cloud_download</i> 官方下载</a>
@@ -765,7 +769,7 @@ table tr td:first-child {
                                                         <a id="quan_conf" class="copy-config btn-dl" onclick=Copyconfig("{$subInfo['quantumult_conf']}","#quan_conf","quantumult://settings?configuration=clipboard")><i class="material-icons icon-sm">send</i> 完整策略组配置</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_4</span> QuantumultX - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_4</span> QuantumultX - [ SS/SSR/VMess/Trojan ]：</p>
 												    <p>该客户端专属订阅链接支持同时订阅 SS/SSR/V2Ray 节点.</p>
 													<p>
                                                         应用下载：
@@ -782,7 +786,7 @@ table tr td:first-child {
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['quantumultx']}"><i class="material-icons icon-sm">send</i> 拷贝该应用专属订阅链接</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_5</span> Shadowrocket - [ SS/SSR/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_5</span> Shadowrocket - [ SS/SSR/VMess/Trojan ]：</p>
 												    <p>该客户端专属订阅链接支持同时订阅 SS/SSR/V2Ray 节点.</p>
 													<p>
                                                         应用下载：
