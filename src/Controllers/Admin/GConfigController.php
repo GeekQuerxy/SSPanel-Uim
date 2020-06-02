@@ -178,7 +178,7 @@ class GConfigController extends AdminController
         return $response->write(
             $this->view()
                 ->assign('table_config', $table_config)
-                ->fetch('admin/config/users/index.tpl')
+                ->fetch('admin/config/user/index.tpl')
         );
     }
 
