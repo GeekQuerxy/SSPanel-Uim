@@ -45,7 +45,7 @@
                         {elseif $edit_config->type == 'int'}
                             <div class="form-group form-group-label">
                                 <label class="floating-label" for="value">配置值</label>
-                                <textarea class="form-control maxwidth-edit" id="value" type="number">{$edit_config->getValue()}</textarea>
+                                <input class="form-control maxwidth-edit" id="value" type="number" value="{$edit_config->getValue()}">
                             </div>
                         {else}
                             <div class="form-group form-group-label">
