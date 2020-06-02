@@ -406,6 +406,22 @@ class DefaultConfig
                 'name'          => '注册时随机分组',
                 'comment'       => '注册时随机分配到的分组，多个分组请用英文半角逗号分隔',
             ],
+
+
+            # 已注册用户设置
+            'Users.string.checkinMin' => [
+                'type'          => 'string',
+                'value'         => '1',
+                'name'          => '用户签到最少流量',
+                'comment'       => '单位：MB',
+            ],
+            'Users.string.checkinMax' => [
+                'type'          => 'string',
+                'value'         => '50',
+                'name'          => '用户签到最多流量',
+                'comment'       => '单位：MB',
+            ],
+
         ];
 
         $addDefaultFields = [

@@ -555,7 +555,7 @@ class User extends Model
             $return['ok']  = false;
             $return['msg'] = '您似乎已经签到过了...';
         } else {
-            $traffic = random_int((int) $_ENV['checkinMin'], (int) $_ENV['checkinMax']);
+            $traffic = random_int((int) Config::getconfig('Users.string.checkinMin'), (int) Config::getconfig('Users.string.checkinMax'));
             $this->transfer_enable += Tools::toMB($traffic);
             $this->last_check_in_time = time();
             $this->save();

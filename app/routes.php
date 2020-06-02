@@ -314,6 +314,9 @@ return function (SlimApp $app) {
 
             $this->get('/register',             App\Controllers\Admin\GConfigController::class . ':register');
             $this->post('/register/ajax',       App\Controllers\Admin\GConfigController::class . ':register_ajax');
+
+            $this->get('/users',                 App\Controllers\Admin\GConfigController::class . ':users');
+            $this->post('/users/ajax',           App\Controllers\Admin\GConfigController::class . ':users_ajax');
         });
     })->add(new Admin());
 
