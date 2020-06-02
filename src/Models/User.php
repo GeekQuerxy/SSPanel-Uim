@@ -555,7 +555,7 @@ class User extends Model
             $return['ok']  = false;
             $return['msg'] = '您似乎已经签到过了...';
         } else {
-            $traffic = random_int((int) $_ENV['checkinMin'], (int) $_ENV['checkinMax']);
+            $traffic = random_int(Config::getconfig('Users.int.checkinMin'), Config::getconfig('Users.int.checkinMax'));
             $this->transfer_enable += Tools::toMB($traffic);
             $this->last_check_in_time = time();
             $this->save();
@@ -764,7 +764,7 @@ class User extends Model
      */
     public function ResetPort(): array
     {
-        $price = $_ENV['port_price'];
+        $price = Config::getconfig('Users.int.port_price');
         if ($this->money < $price) {
             return [
                 'ok'  => false,
@@ -788,7 +788,7 @@ class User extends Model
      */
     public function SpecifyPort($Port): array
     {
-        $price = $_ENV['port_price_specify'];
+        $price = Config::getconfig('Users.int.port_price_specify');
         if ($this->money < $price) {
             return [
                 'ok'  => false,

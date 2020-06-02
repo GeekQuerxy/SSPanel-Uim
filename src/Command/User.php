@@ -157,11 +157,11 @@ class User extends Command
             $user->t                = 0;
             $user->u                = 0;
             $user->d                = 0;
-            $user->transfer_enable  = Tools::toGB((int) Config::getconfig('Register.string.defaultTraffic'));
-            $user->invite_num       = (int) Config::getconfig('Register.string.defaultInviteNum');
+            $user->transfer_enable  = Tools::toGB(Config::getconfig('Register.int.defaultTraffic'));
+            $user->invite_num       = Config::getconfig('Register.int.defaultInviteNum');
             $user->ref_by           = 0;
             $user->is_admin         = 1;
-            $user->expire_in        = date('Y-m-d H:i:s', time() + (int) Config::getconfig('Register.string.defaultExpire_in') * 86400);
+            $user->expire_in        = date('Y-m-d H:i:s', time() + Config::getconfig('Register.int.defaultExpire_in') * 86400);
             $user->reg_date         = date('Y-m-d H:i:s');
             $user->money            = 0;
             $user->im_type          = 1;

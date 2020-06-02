@@ -284,7 +284,7 @@ class AuthController extends BaseController
             }
 
             $ipcount = EmailVerify::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('expire_in', '>', time())->count();
-            if ($ipcount >= (int) Config::getconfig('Register.string.Email_verify_iplimit')) {
+            if ($ipcount >= Config::getconfig('Register.int.Email_verify_iplimit')) {
                 $res['ret'] = 0;
                 $res['msg'] = '此IP请求次数过多';
                 return $response->getBody()->write(json_encode($res));
@@ -301,7 +301,7 @@ class AuthController extends BaseController
             $code = Tools::genRandomNum(6);
 
             $ev = new EmailVerify();
-            $ev->expire_in = time() + (int) Config::getconfig('Register.string.Email_verify_ttl');
+            $ev->expire_in = time() + Config::getconfig('Register.int.Email_verify_ttl');
             $ev->ip = $_SERVER['REMOTE_ADDR'];
             $ev->email = $email;
             $ev->code = $code;
@@ -311,7 +311,7 @@ class AuthController extends BaseController
 
             try {
                 Mail::send($email, $subject, 'auth/verify.tpl', [
-                    'code' => $code, 'expire' => date('Y-m-d H:i:s', time() + (int) Config::getconfig('Register.string.Email_verify_ttl'))
+                    'code' => $code, 'expire' => date('Y-m-d H:i:s', time() + Config::getconfig('Register.int.Email_verify_ttl'))
                 ], [
                     //BASE_PATH.'/public/assets/email/styles.css'
                 ]);
@@ -388,10 +388,10 @@ class AuthController extends BaseController
         $user->forbidden_port       = Config::getconfig('Register.string.reg_forbidden_port');
         $user->im_type              = $imtype;
         $user->im_value             = $antiXss->xss_clean($imvalue);
-        $user->transfer_enable      = Tools::toGB((int) Config::getconfig('Register.string.defaultTraffic'));
-        $user->invite_num           = (int) Config::getconfig('Register.string.defaultInviteNum');
-        $user->auto_reset_day       = Config::getconfig('Register.string.reg_auto_reset_day');
-        $user->auto_reset_bandwidth = Config::getconfig('Register.string.reg_auto_reset_bandwidth');
+        $user->transfer_enable      = Tools::toGB(Config::getconfig('Register.int.defaultTraffic'));
+        $user->invite_num           = Config::getconfig('Register.int.defaultInviteNum');
+        $user->auto_reset_day       = Config::getconfig('Register.int.reg_auto_reset_day');
+        $user->auto_reset_bandwidth = Config::getconfig('Register.int.reg_auto_reset_bandwidth');
         $user->money                = 0;
         $user->sendDailyMail        = Config::getconfig('Register.bool.send_dailyEmail');
 
@@ -400,8 +400,8 @@ class AuthController extends BaseController
         if (($c != null) && $c->user_id != 0) {
             $gift_user = User::where('id', '=', $c->user_id)->first();
             $user->ref_by = $c->user_id;
-            $user->money = (int) Config::getconfig('Register.string.defaultInvite_get_money');
-            $gift_user->transfer_enable += $_ENV['invite_gift'] * 1024 * 1024 * 1024;
+            $user->money = Config::getconfig('Register.int.defaultInvite_get_money');
+            $gift_user->transfer_enable += Config::getconfig('Users.int.invite_gift') * 1024 * 1024 * 1024;
             --$gift_user->invite_num;
             $gift_user->save();
         }
@@ -409,11 +409,11 @@ class AuthController extends BaseController
             $user->telegram_id = $telegram_id;
         }
 
-        $user->class_expire     = date('Y-m-d H:i:s', time() + (int) Config::getconfig('Register.string.defaultClass_expire') * 3600);
-        $user->class            = (int) Config::getconfig('Register.string.defaultClass');
-        $user->node_connector   = (int) Config::getconfig('Register.string.defaultConn');
-        $user->node_speedlimit  = (int) Config::getconfig('Register.string.defaultSpeedlimit');
-        $user->expire_in        = date('Y-m-d H:i:s', time() + (int) Config::getconfig('Register.string.defaultExpire_in') * 86400);
+        $user->class_expire     = date('Y-m-d H:i:s', time() + Config::getconfig('Register.int.defaultClass_expire') * 3600);
+        $user->class            = Config::getconfig('Register.int.defaultClass');
+        $user->node_connector   = Config::getconfig('Register.int.defaultConn');
+        $user->node_speedlimit  = Config::getconfig('Register.int.defaultSpeedlimit');
+        $user->expire_in        = date('Y-m-d H:i:s', time() + Config::getconfig('Register.int.defaultExpire_in') * 86400);
         $user->reg_date         = date('Y-m-d H:i:s');
         $user->reg_ip           = $_SERVER['REMOTE_ADDR'];
         $user->plan             = 'A';

@@ -86,27 +86,13 @@ $_ENV['mu_regex']                  = '%5m%id.%suffix';          //单端口多�
 
 //已注册用户设置---------------------------------------------------------------------------------------
 #基础
-$_ENV['checkinMin']                 = 1;            //用户签到最少流量 单位MB
-$_ENV['checkinMax']                 = 50;           //用户签到最多流量
-
 $_ENV['auto_clean_uncheck_days']    = -1;           //自动清理多少天没签到的0级用户，小于等于0时关闭
 $_ENV['auto_clean_unused_days']     = -1;           //自动清理多少天没使用的0级用户，小于等于0时关闭
 $_ENV['auto_clean_min_money']       = 1;            //余额低于多少的0级用户可以被清理
 
-$_ENV['code_payback']               = 20;           //充值返利百分比
-$_ENV['invite_gift']                = 2;            //邀请新用户获得流量奖励，单位G
-
-$_ENV['enable_bought_reset']        = true;         //购买时是否重置流量
-$_ENV['enable_bought_extend']       = true;         //购买时是否延长等级期限（同等级配套）
-
-$_ENV['port_price']                 = -1;           //用户随机重置端口所需要的价格，价格小于0时视为不开放购买
-$_ENV['port_price_specify']         = -1;           //用户指明钦定端口所需要的价格，价格小于0时视为不开放购买
-
 #高级
 $_ENV['class_expire_reset_traffic'] = 0;            //等级到期时重置为的流量值，单位GB，小于0时不重置
 $_ENV['account_expire_delete_days'] = -1;           //账户到期几天之后会删除账户，小于0时不删除
-
-$_ENV['enable_kill']                = true;         //是否允许用户注销账户
 
 #用户流量余量不足邮件提醒
 $_ENV['notify_limit_mode']          = true;         //false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒

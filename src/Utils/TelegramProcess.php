@@ -63,7 +63,7 @@ class TelegramProcess
                         $reply['message'] = '您今天已经签过到了！';
                         break;
                     }
-                    $traffic = random_int($_ENV['checkinMin'], $_ENV['checkinMax']);
+                    $traffic = random_int(Config::getconfig('Users.int.checkinMin'), Config::getconfig('Users.int.checkinMax'));
                     $user->transfer_enable += Tools::toMB($traffic);
                     $user->last_check_in_time = time();
                     $user->save();

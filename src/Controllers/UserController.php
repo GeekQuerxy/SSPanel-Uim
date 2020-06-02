@@ -271,15 +271,16 @@ class UserController extends BaseController
             $user->save();
 
             if ($user->ref_by != '' && $user->ref_by != 0 && $user->ref_by != null) {
+                $code_payback = Config::getconfig('Users.int.code_payback');
                 $gift_user = User::where('id', '=', $user->ref_by)->first();
-                $gift_user->money += ($codeq->number * ($_ENV['code_payback'] / 100));
+                $gift_user->money += ($codeq->number * ($code_payback / 100));
                 $gift_user->save();
 
                 $Payback = new Payback();
                 $Payback->total = $codeq->number;
                 $Payback->userid = $this->user->id;
                 $Payback->ref_by = $this->user->ref_by;
-                $Payback->ref_get = $codeq->number * ($_ENV['code_payback'] / 100);
+                $Payback->ref_get = $codeq->number * ($code_payback / 100);
                 $Payback->datetime = time();
                 $Payback->save();
             }
@@ -524,9 +525,9 @@ class UserController extends BaseController
 
     public function buyInvite($request, $response, $args)
     {
-        $price = (int) Config::getconfig('Register.string.invite_price');
-        $num = $request->getParam('num');
-        $num = trim($num);
+        $price = Config::getconfig('Register.int.invite_price');
+        $num   = $request->getParam('num');
+        $num   = trim($num);
 
         if (!Tools::isInt($num) || $price < 0 || $num <= 0) {
             $res['ret'] = 0;
@@ -559,7 +560,7 @@ class UserController extends BaseController
 
     public function customInvite($request, $response, $args)
     {
-        $price = (int) Config::getconfig('Register.string.custom_invite_price');
+        $price      = Config::getconfig('Register.int.custom_invite_price');
         $customcode = $request->getParam('customcode');
         $customcode = trim($customcode);
 
@@ -1256,7 +1257,7 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if ($_ENV['enable_kill'] == true) {
+        if (Config::getconfig('Users.bool.enable_kill') == true) {
             Auth::logout();
             $user->kill_user();
             $res['ret'] = 1;
