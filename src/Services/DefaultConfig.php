@@ -23,7 +23,7 @@ class DefaultConfig
             $new->comment        = $value['comment'];
             $new->operator_id    = $value['operator_id'];
             $new->operator_name  = $value['operator_name'];
-            $new->oldvalue       = '';
+            $new->oldvalue       = $value['value'];
             $new->operator_email = '';
             $new->last_update    = time();
             if ($new->save()) {
@@ -64,6 +64,33 @@ class DefaultConfig
             }
         }
         $return .= '以上是新增的配置项...' . PHP_EOL;
+
+        $migrates = [
+            'Register.string.Email_verify_ttl'          => 'Register.int.Email_verify_ttl',
+            'Register.string.Email_verify_iplimit'      => 'Register.int.Email_verify_iplimit',
+            'Register.string.defaultTraffic'            => 'Register.int.defaultTraffic',
+            'Register.string.defaultClass'              => 'Register.int.defaultClass',
+            'Register.string.defaultConn'               => 'Register.int.defaultConn',
+            'Register.string.defaultSpeedlimit'         => 'Register.int.defaultSpeedlimit',
+            'Register.string.defaultExpire_in'          => 'Register.int.defaultExpire_in',
+            'Register.string.defaultClass_expire'       => 'Register.int.defaultClass_expire',
+            'Register.string.defaultInviteNum'          => 'Register.int.defaultInviteNum',
+            'Register.string.defaultInvite_get_money'   => 'Register.int.defaultInvite_get_money',
+        ];
+        foreach ($migrates as $key => $value) {
+            $new = GConfig::where('key', '=', $value)->first();
+            $old = GConfig::where('key', '=', $key)->first();
+            if (
+                $new != null
+                &&
+                $old != null
+            ) {
+                $new->value    = $old->value;
+                $new->oldvalue = $old->value;
+                $new->save();
+                $old->delete();
+            }
+        }
 
         return $return;
     }
@@ -270,50 +297,50 @@ class DefaultConfig
                 'name'          => '注册时是否开启每日邮件',
                 'comment'       => '',
             ],
-            'Register.string.Email_verify_ttl' => [
-                'type'          => 'string',
+            'Register.int.Email_verify_ttl' => [
+                'type'          => 'int',
                 'value'         => '3600',
                 'name'          => '邮箱验证码有效期',
                 'comment'       => '',
             ],
-            'Register.string.Email_verify_iplimit' => [
-                'type'          => 'string',
+            'Register.int.Email_verify_iplimit' => [
+                'type'          => 'int',
                 'value'         => '10',
                 'name'          => '验证码有效期内单IP可请求次数',
                 'comment'       => '',
             ],
-            'Register.string.defaultTraffic' => [
-                'type'          => 'string',
+            'Register.int.defaultTraffic' => [
+                'type'          => 'int',
                 'value'         => '1',
                 'name'          => '用户初始流量',
                 'comment'       => '用户初始流量，单位：GB',
             ],
-            'Register.string.defaultClass' => [
-                'type'          => 'string',
+            'Register.int.defaultClass' => [
+                'type'          => 'int',
                 'value'         => '0',
                 'name'          => '用户初始等级',
                 'comment'       => '用户初始等级',
             ],
-            'Register.string.defaultConn' => [
-                'type'          => 'string',
+            'Register.int.defaultConn' => [
+                'type'          => 'int',
                 'value'         => '0',
                 'name'          => '初始客户端数量限制',
                 'comment'       => '0 为不限制',
             ],
-            'Register.string.defaultSpeedlimit' => [
-                'type'          => 'string',
+            'Register.int.defaultSpeedlimit' => [
+                'type'          => 'int',
                 'value'         => '0',
                 'name'          => '初始连接速率限制',
                 'comment'       => '0 为不限制',
             ],
-            'Register.string.defaultExpire_in' => [
-                'type'          => 'string',
+            'Register.int.defaultExpire_in' => [
+                'type'          => 'int',
                 'value'         => '3650',
                 'name'          => '默认账户过期时间',
                 'comment'       => '用户账户过期时间，在注册时设置（天）',
             ],
-            'Register.string.defaultClass_expire' => [
-                'type'          => 'string',
+            'Register.int.defaultClass_expire' => [
+                'type'          => 'int',
                 'value'         => '24',
                 'name'          => '等级过期时间',
                 'comment'       => '用户等级过期时间，在注册时设置（小时）',
@@ -348,14 +375,14 @@ class DefaultConfig
                 'name'          => '注册时默认混淆参数',
                 'comment'       => '注册时默认混淆参数 设置单端口后 这边必须配置！填写www.jd.hk就行',
             ],
-            'Register.string.defaultInviteNum' => [
-                'type'          => 'string',
+            'Register.int.defaultInviteNum' => [
+                'type'          => 'int',
                 'value'         => '10',
                 'name'          => '邀请链接可用次数',
                 'comment'       => '注册后的邀请链接可用次数',
             ],
-            'Register.string.defaultInvite_get_money' => [
-                'type'          => 'string',
+            'Register.int.defaultInvite_get_money' => [
+                'type'          => 'int',
                 'value'         => '1',
                 'name'          => '通过邀请链接注册获得奖励',
                 'comment'       => '新用户通过私人邀请链接注册时，获得奖励金额（作为初始资金）',
