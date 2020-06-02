@@ -227,7 +227,7 @@ class VueController extends BaseController
             'invitePrice'       => Config::getconfig('Register.int.invite_price'),
             'customPrice'       => Config::getconfig('Register.int.custom_invite_price'),
             'invite_gift'       => Config::getconfig('Users.int.invite_gift'),
-            'invite_get_money'  => (int) Config::getconfig('Register.string.defaultInvite_get_money'),
+            'invite_get_money'  => Config::getconfig('Register.int.defaultInvite_get_money'),
             'code_payback'      => Config::getconfig('Users.int.code_payback'),
         );
 

@@ -32,7 +32,7 @@ class Config
             'checkinMin'              => self::getconfig('Users.int.checkinMin'),
             'checkinMax'              => self::getconfig('Users.int.checkinMax'),
             'invite_price'            => self::getconfig('Register.int.invite_price'),
-            'invite_get_money'        => (int) self::getconfig('Register.string.defaultInvite_get_money'),
+            'invite_get_money'        => self::getconfig('Register.int.defaultInvite_get_money'),
             'code_payback'            => self::getconfig('Users.int.code_payback'),
             'invite_gift'             => self::getconfig('Users.int.invite_gift'),
             'port_price'              => self::getconfig('Users.int.port_price'),
