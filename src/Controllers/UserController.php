@@ -1257,7 +1257,7 @@ class UserController extends BaseController
             return $this->echoJson($response, $res);
         }
 
-        if ($_ENV['enable_kill'] == true) {
+        if (Config::getconfig('Users.bool.enable_kill') == true) {
             Auth::logout();
             $user->kill_user();
             $res['ret'] = 1;

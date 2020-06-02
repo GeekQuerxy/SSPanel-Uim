@@ -79,7 +79,7 @@ class VueController extends BaseController
             'enable_ticket'           => $_ENV['enable_ticket'],
             'payment_type'            => $_ENV['payment_system'],
             'mylivechat_id'           => $_ENV['mylivechat_id'],
-            'enable_kill'             => $_ENV['enable_kill'],
+            'enable_kill'             => Config::getconfig('Users.bool.enable_kill'),
             'subscribeLog'            => $_ENV['subscribeLog'],
             'subscribeLog_show'       => $_ENV['subscribeLog_show'],
             'themes'                  => $themes,

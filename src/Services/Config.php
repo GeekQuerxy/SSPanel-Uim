@@ -52,7 +52,7 @@ class Config
             'admin_contact3'          => $_ENV['admin_contact3'],
             'register_mode'           => self::getconfig('Register.string.Mode'),
             'enable_flag'             => $_ENV['enable_flag'],
-            'enable_kill'             => $_ENV['enable_kill'],
+            'enable_kill'             => self::getconfig('Users.bool.enable_kill'),
             'custom_invite_price'     => self::getconfig('Register.int.custom_invite_price'),
             'captcha_provider'        => $_ENV['captcha_provider'],
             'enable_email_verify'     => self::getconfig('Register.bool.Enable_email_verify'),

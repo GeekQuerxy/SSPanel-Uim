@@ -475,6 +475,25 @@ class DefaultConfig
                 'comment'       => '价格小于 0 时视为不开放购买',
             ],
 
+            'Users.bool.enable_bought_reset' => [
+                'type'          => 'bool',
+                'value'         => '1',
+                'name'          => '购买时是否重置流量',
+                'comment'       => '',
+            ],
+            'Users.bool.enable_bought_extend' => [
+                'type'          => 'bool',
+                'value'         => '1',
+                'name'          => '购买时是否延长等级期限（同等级配套）',
+                'comment'       => '',
+            ],
+
+            'Users.bool.enable_kill' => [
+                'type'          => 'bool',
+                'value'         => '1',
+                'name'          => '是否允许用户注销账户',
+                'comment'       => '',
+            ],
         ];
 
         $addDefaultFields = [
