@@ -93,10 +93,16 @@ class GConfigController extends AdminController
             $tempdata['operator_name']  = $config->operator_name;
             $tempdata['operator_email'] = $config->operator_email;
             $tempdata['last_update']    = date('Y-m-d H:i:s', $config->last_update);
-            if (strpos($config->key, '.bool.')) {
-                $tempdata['value'] = ($config->getValue() ? '开启' : '关闭');
-            } else {
-                $tempdata['value'] = '(请在编辑页面查看)';
+            switch ($config['type']) {
+                case 'int':
+                    $tempdata['value'] = $config->getValue();
+                    break;
+                case 'bool':
+                    $tempdata['value'] = ($config->getValue() ? '开启' : '关闭');
+                    break;
+                default:
+                    $tempdata['value'] = '(请在编辑页面查看)';
+                    break;
             }
             $data[] = $tempdata;
         }

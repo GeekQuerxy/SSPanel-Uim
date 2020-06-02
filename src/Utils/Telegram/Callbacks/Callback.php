@@ -1163,9 +1163,9 @@ class Callback
         $text = [
             '<strong>分享计划，您每邀请 1 位用户注册：</strong>',
             '',
-            '- 您会获得 <strong>' . $_ENV['invite_gift'] . 'G</strong> 流量奖励.',
+            '- 您会获得 <strong>' . Config::getconfig('Users.int.invite_gift') . 'G</strong> 流量奖励.',
             '- 对方将获得 <strong>' . (int) Config::getconfig('Register.string.defaultInvite_get_money') . ' 元</strong> 奖励作为初始资金.',
-            '- 对方充值时您还会获得对方充值金额的 <strong>' . $_ENV['code_payback'] . '%</strong> 的返利.',
+            '- 对方充值时您还会获得对方充值金额的 <strong>' . Config::getconfig('Users.int.code_payback') . '%</strong> 的返利.',
             '',
             '已获得返利：' . $paybacks_sum . ' 元.',
         ];

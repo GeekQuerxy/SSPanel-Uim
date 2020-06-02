@@ -78,24 +78,15 @@ $_ENV['mu_regex']                  = '%5m%id.%suffix';          //单端口多�
 
 
 //已注册用户设置---------------------------------------------------------------------------------------
-#基础
 $_ENV['auto_clean_uncheck_days']    = -1;           //自动清理多少天没签到的0级用户，小于等于0时关闭
 $_ENV['auto_clean_unused_days']     = -1;           //自动清理多少天没使用的0级用户，小于等于0时关闭
 $_ENV['auto_clean_min_money']       = 1;            //余额低于多少的0级用户可以被清理
 
-$_ENV['code_payback']               = 20;           //充值返利百分比
-$_ENV['invite_gift']                = 2;            //邀请新用户获得流量奖励，单位G
-
-$_ENV['enable_bought_reset']        = true;         //购买时是否重置流量
-$_ENV['enable_bought_extend']       = true;         //购买时是否延长等级期限（同等级配套）
-
-$_ENV['port_price']                 = -1;           //用户随机重置端口所需要的价格，价格小于0时视为不开放购买
-$_ENV['port_price_specify']         = -1;           //用户指明钦定端口所需要的价格，价格小于0时视为不开放购买
-
-#高级
 $_ENV['class_expire_reset_traffic'] = 0;            //等级到期时重置为的流量值，单位GB，小于0时不重置
 $_ENV['account_expire_delete_days'] = -1;           //账户到期几天之后会删除账户，小于0时不删除
 
+$_ENV['enable_bought_reset']        = true;         //购买时是否重置流量
+$_ENV['enable_bought_extend']       = true;         //购买时是否延长等级期限（同等级配套）
 $_ENV['enable_kill']                = true;         //是否允许用户注销账户
 
 #用户流量余量不足邮件提醒
@@ -107,14 +98,14 @@ $_ENV['notify_limit_value']         = 20;           //当上一项为per时，�
 $_ENV['Subscribe']                  = true;                         //本站是否提供订阅功能
 $_ENV['subUrl']                     = $_ENV['baseUrl'] . '/link/';  //订阅地址，如需和站点名称相同，请不要修改
 $_ENV['mergeSub']                   = true;                         //合并订阅设置 可选项 false / true
-$_ENV['enable_sub_extend']          = true;                         // 是否开启订阅中默认显示流量剩余以及账户到期时间以及 sub_message 中的信息
+$_ENV['enable_sub_extend']          = true;                         //是否开启订阅中默认显示流量剩余以及账户到期时间以及 sub_message 中的信息
 
 
 // 订阅中的营销信息
 // 使用数组形式，将会添加在订阅列表的顶端
 // 可用于为用户推送最新地址等信息，尽可能简短且数量不宜太多
 $_ENV['sub_message']                = [];
-$_ENV['disable_sub_mu_port']        = false;                        // 将订阅中单端口的信息去除
+$_ENV['disable_sub_mu_port']        = false;                        //将订阅中单端口的信息去除
 $_ENV['subscribeLog']               = false;			            //是否记录用户订阅日志
 $_ENV['subscribeLog_show']          = true;                         //是否允许用户查看订阅记录
 $_ENV['subscribeLog_keep_days']     = 7;		                    //订阅记录保留天数

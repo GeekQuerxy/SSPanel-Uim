@@ -32,12 +32,7 @@
                             </div>
                         {/if}
 
-                        {if strpos($edit_config->key,'.bool.') === false}
-                            <div class="form-group form-group-label">
-                                <label class="floating-label" for="value">配置值</label>
-                                <textarea class="form-control maxwidth-edit" id="value" rows="5">{$edit_config->getValue()}</textarea>
-                            </div>
-                        {else}
+                        {if $edit_config->type == 'bool'}
                             <div class="form-group form-group-label">
                                 <label for="value">
                                     <label class="floating-label" for="value">配置开关</label>
@@ -46,6 +41,16 @@
                                         <option value="1" {if $edit_config->getValue()}selected{/if}>开启</option>
                                     </select>
                                 </label>
+                            </div>
+                        {elseif $edit_config->type == 'int'}
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="value">配置值</label>
+                                <textarea class="form-control maxwidth-edit" id="value" type="number">{$edit_config->getValue()}</textarea>
+                            </div>
+                        {else}
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="value">配置值</label>
+                                <textarea class="form-control maxwidth-edit" id="value" rows="5">{$edit_config->getValue()}</textarea>
                             </div>
                         {/if}
 

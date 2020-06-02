@@ -390,8 +390,8 @@ class AuthController extends BaseController
         $user->im_value             = $antiXss->xss_clean($imvalue);
         $user->transfer_enable      = Tools::toGB((int) Config::getconfig('Register.string.defaultTraffic'));
         $user->invite_num           = (int) Config::getconfig('Register.string.defaultInviteNum');
-        $user->auto_reset_day       = Config::getconfig('Register.string.reg_auto_reset_day');
-        $user->auto_reset_bandwidth = Config::getconfig('Register.string.reg_auto_reset_bandwidth');
+        $user->auto_reset_day       = Config::getconfig('Register.int.reg_auto_reset_day');
+        $user->auto_reset_bandwidth = Config::getconfig('Register.int.reg_auto_reset_bandwidth');
         $user->money                = 0;
         $user->sendDailyMail        = Config::getconfig('Register.bool.send_dailyEmail');
 
@@ -401,7 +401,7 @@ class AuthController extends BaseController
             $gift_user = User::where('id', '=', $c->user_id)->first();
             $user->ref_by = $c->user_id;
             $user->money = (int) Config::getconfig('Register.string.defaultInvite_get_money');
-            $gift_user->transfer_enable += $_ENV['invite_gift'] * 1024 * 1024 * 1024;
+            $gift_user->transfer_enable += Config::getconfig('Users.int.invite_gift') * 1024 * 1024 * 1024;
             --$gift_user->invite_num;
             $gift_user->save();
         }

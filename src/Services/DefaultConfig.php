@@ -361,27 +361,27 @@ class DefaultConfig
                 'comment'       => '新用户通过私人邀请链接注册时，获得奖励金额（作为初始资金）',
             ],
 
-            'Register.string.invite_price' => [
-                'type'          => 'string',
+            'Register.int.invite_price' => [
+                'type'          => 'int',
                 'value'         => '-1',
                 'name'          => '用户购买邀请码所需要的价格',
                 'comment'       => '价格小于 0 时视为不开放购买',
             ],
-            'Register.string.custom_invite_price' => [
-                'type'          => 'string',
+            'Register.int.custom_invite_price' => [
+                'type'          => 'int',
                 'value'         => '-1',
                 'name'          => '用户定制邀请码所需要的价格',
                 'comment'       => '价格小于 0 时视为不开放购买',
             ],
 
-            'Register.string.reg_auto_reset_day' => [
-                'type'          => 'string',
+            'Register.int.reg_auto_reset_day' => [
+                'type'          => 'int',
                 'value'         => '0',
                 'name'          => '注册时的流量重置日',
                 'comment'       => '0 为不重置',
             ],
-            'Register.string.reg_auto_reset_bandwidth' => [
-                'type'          => 'string',
+            'Register.int.reg_auto_reset_bandwidth' => [
+                'type'          => 'int',
                 'value'         => '0',
                 'name'          => '注册时的每月重置流量',
                 'comment'       => '单位：GB',
@@ -409,17 +409,43 @@ class DefaultConfig
 
 
             # 已注册用户设置
-            'Users.string.checkinMin' => [
-                'type'          => 'string',
+            'Users.int.checkinMin' => [
+                'type'          => 'int',
                 'value'         => '1',
                 'name'          => '用户签到最少流量',
                 'comment'       => '单位：MB',
             ],
-            'Users.string.checkinMax' => [
-                'type'          => 'string',
+            'Users.int.checkinMax' => [
+                'type'          => 'int',
                 'value'         => '50',
                 'name'          => '用户签到最多流量',
                 'comment'       => '单位：MB',
+            ],
+
+            'Users.int.code_payback' => [
+                'type'          => 'int',
+                'value'         => '20',
+                'name'          => '充值返利百分比',
+                'comment'       => '',
+            ],
+            'Users.int.invite_gift' => [
+                'type'          => 'int',
+                'value'         => '2',
+                'name'          => '邀请新用户获得流量奖励',
+                'comment'       => '单位：GB',
+            ],
+
+            'Users.int.port_price' => [
+                'type'          => 'int',
+                'value'         => '-1',
+                'name'          => '用户随机重置端口所需要的价格',
+                'comment'       => '价格小于 0 时视为不开放购买',
+            ],
+            'Users.int.port_price_specify' => [
+                'type'          => 'int',
+                'value'         => '-1',
+                'name'          => '用户指明钦定端口所需要的价格',
+                'comment'       => '价格小于 0 时视为不开放购买',
             ],
 
         ];

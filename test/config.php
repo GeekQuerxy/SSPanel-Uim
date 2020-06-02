@@ -90,14 +90,8 @@ $_ENV['auto_clean_uncheck_days']    = -1;           //自动清理多少天没�
 $_ENV['auto_clean_unused_days']     = -1;           //自动清理多少天没使用的0级用户，小于等于0时关闭
 $_ENV['auto_clean_min_money']       = 1;            //余额低于多少的0级用户可以被清理
 
-$_ENV['code_payback']               = 20;           //充值返利百分比
-$_ENV['invite_gift']                = 2;            //邀请新用户获得流量奖励，单位G
-
 $_ENV['enable_bought_reset']        = true;         //购买时是否重置流量
 $_ENV['enable_bought_extend']       = true;         //购买时是否延长等级期限（同等级配套）
-
-$_ENV['port_price']                 = -1;           //用户随机重置端口所需要的价格，价格小于0时视为不开放购买
-$_ENV['port_price_specify']         = -1;           //用户指明钦定端口所需要的价格，价格小于0时视为不开放购买
 
 #高级
 $_ENV['class_expire_reset_traffic'] = 0;            //等级到期时重置为的流量值，单位GB，小于0时不重置

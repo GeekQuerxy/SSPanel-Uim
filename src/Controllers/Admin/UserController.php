@@ -120,8 +120,8 @@ class UserController extends AdminController
         $user->im_value             = $email;
         $user->transfer_enable      = Tools::toGB((int) Config::getconfig('Register.string.defaultTraffic'));
         $user->invite_num           = (int) Config::getconfig('Register.string.defaultInviteNum');
-        $user->auto_reset_day       = Config::getconfig('Register.string.reg_auto_reset_day');
-        $user->auto_reset_bandwidth = Config::getconfig('Register.string.reg_auto_reset_bandwidth');
+        $user->auto_reset_day       = Config::getconfig('Register.int.reg_auto_reset_day');
+        $user->auto_reset_bandwidth = Config::getconfig('Register.int.reg_auto_reset_bandwidth');
         $user->money                = ($money != -1 ? $money : 0);
         $user->class_expire         = date('Y-m-d H:i:s', time() + (int) Config::getconfig('Register.string.defaultClass_expire') * 3600);
         $user->class                = (int) Config::getconfig('Register.string.defaultClass');

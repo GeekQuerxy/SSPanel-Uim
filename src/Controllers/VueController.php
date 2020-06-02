@@ -224,11 +224,11 @@ class VueController extends BaseController
             'paybacks'          => $paybacks,
             'paybacks_sum'      => $paybacks_sum,
             'invite_num'        => $user->invite_num,
-            'invitePrice'       => (int) Config::getconfig('Register.string.invite_price'),
-            'customPrice'       => (int) Config::getconfig('Register.string.custom_invite_price'),
-            'invite_gift'       => $_ENV['invite_gift'],
+            'invitePrice'       => Config::getconfig('Register.int.invite_price'),
+            'customPrice'       => Config::getconfig('Register.int.custom_invite_price'),
+            'invite_gift'       => Config::getconfig('Users.int.invite_gift'),
             'invite_get_money'  => (int) Config::getconfig('Register.string.defaultInvite_get_money'),
-            'code_payback'      => $_ENV['code_payback'],
+            'code_payback'      => Config::getconfig('Users.int.code_payback'),
         );
 
         $res['ret'] = 1;
@@ -704,18 +704,18 @@ class VueController extends BaseController
     {
         $config_service = new Config();
 
-        $res['ret'] = 1;
-        $res['methods'] = $config_service->getSupportParam('methods');
-        $res['protocol'] = $config_service->getSupportParam('protocol');
-        $res['obfs'] = $config_service->getSupportParam('obfs');
+        $res['ret']                 = 1;
+        $res['methods']             = $config_service->getSupportParam('methods');
+        $res['protocol']            = $config_service->getSupportParam('protocol');
+        $res['obfs']                = $config_service->getSupportParam('obfs');
         $res['allow_none_protocol'] = $config_service->getSupportParam('allow_none_protocol');
         $res['relay_able_protocol'] = $config_service->getSupportParam('relay_able_protocol');
-        $res['ss_aead_method'] = $config_service->getSupportParam('ss_aead_method');
-        $res['ss_obfs'] = $config_service->getSupportParam('ss_obfs');
-        $res['port_price'] = $_ENV['invite_gift'];
-        $res['port_price_specify'] = $_ENV['port_price_specify'];
-        $res['min_port'] = $_ENV['min_port'];
-        $res['max_port'] = $_ENV['max_port'];
+        $res['ss_aead_method']      = $config_service->getSupportParam('ss_aead_method');
+        $res['ss_obfs']             = $config_service->getSupportParam('ss_obfs');
+        $res['port_price']          = Config::getconfig('Users.int.port_price');
+        $res['port_price_specify']  = Config::getconfig('Users.int.port_price_specify');
+        $res['min_port']            = $_ENV['min_port'];
+        $res['max_port']            = $_ENV['max_port'];
 
         return $response->withJson($res);
     }

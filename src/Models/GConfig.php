@@ -52,6 +52,8 @@ class GConfig extends Model
                 return json_decode($this->value, true);
             case 'string':
                 return (string)    $this->value;
+            case 'int':
+                return (int)       $this->value;
             default:
                 return (string)    $this->value;
         }
@@ -101,6 +103,8 @@ class GConfig extends Model
                 return json_encode($value, 320);
             case 'string':
                 return (string) $value;
+            case 'int':
+                return (int)    $value;
             default:
                 return (string) $value;
         }

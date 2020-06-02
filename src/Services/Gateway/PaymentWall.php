@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Code;
 use App\Services\Auth;
 use App\Models\Payback;
+use App\Services\Config;
 use App\Utils\Telegram;
 use Paymentwall_Config;
 use Paymentwall_Pingback;
@@ -52,14 +53,15 @@ class PaymentWall extends AbstractPayment
                 $codeq->userid = $user->id;
                 $codeq->save();
                 if ($user->ref_by != '' && $user->ref_by != 0 && $user->ref_by != null) {
+                    $code_payback = Config::getconfig('Users.int.code_payback');
                     $gift_user = User::where('id', '=', $user->ref_by)->first();
-                    $gift_user->money += ($codeq->number * ($_ENV['code_payback'] / 100));
+                    $gift_user->money += ($codeq->number * ($code_payback / 100));
                     $gift_user->save();
                     $Payback = new Payback();
                     $Payback->total = $pingback->getVirtualCurrencyAmount();
                     $Payback->userid = $user->id;
                     $Payback->ref_by = $user->ref_by;
-                    $Payback->ref_get = $codeq->number * ($_ENV['code_payback'] / 100);
+                    $Payback->ref_get = $codeq->number * ($code_payback / 100);
                     $Payback->datetime = time();
                     $Payback->save();
                 }
