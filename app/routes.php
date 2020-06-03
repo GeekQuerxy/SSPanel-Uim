@@ -255,8 +255,6 @@ return function (SlimApp $app) {
         $this->post('/user/changetouser',       App\Controllers\Admin\UserController::class . ':changetouser');
         $this->post('/user/ajax',               App\Controllers\Admin\UserController::class . ':ajax');
         $this->post('/user/create',             App\Controllers\Admin\UserController::class . ':createNewUser');
-        $this->post('/user/buy',                App\Controllers\Admin\UserController::class . ':buy');
-
 
         $this->get('/coupon',                   App\Controllers\AdminController::class . ':coupon');
         $this->post('/coupon',                  App\Controllers\AdminController::class . ':addCoupon');

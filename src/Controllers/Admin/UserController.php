@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\AdminController;
 use App\Models\{
-    Ip,
     User,
     Shop,
     Relay,
@@ -20,7 +19,6 @@ use App\Utils\{
     GA,
     Hash,
     Tools,
-    QQWry,
     Radius,
     Cookie
 };
@@ -190,144 +188,6 @@ class UserController extends AdminController
         $res['ret'] = 0;
         $res['msg'] = '未知错误';
         return $response->withJson($res);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function buy($request, $response, $args)
-    {
-        #shop 信息可以通过 App\Controllers\UserController:shop 获得
-        # 需要shopId，disableothers，autorenew,userEmail
-
-        $shopId         = $request->getParam('shopId');
-        $shop           = Shop::where('id', $shopId)->where('status', 1)->first();
-        $disableothers  = $request->getParam('disableothers');
-        $autorenew      = $request->getParam('autorenew');
-        $email          = $request->getParam('userEmail');
-        $user           = User::where('email', '=', $email)->first();
-        if ($user == null) {
-            $result['ret'] = 0;
-            $result['msg'] = '未找到该用户';
-            return $response->withJson($result);
-        }
-        if ($shop == null) {
-            $result['ret'] = 0;
-            $result['msg'] = '请选择套餐';
-            return $response->withJson($result);
-        }
-        if ($disableothers == 1) {
-            $boughts = Bought::where('userid', $user->id)->get();
-            foreach ($boughts as $disable_bought) {
-                $disable_bought->renew = 0;
-                $disable_bought->save();
-            }
-        }
-        $bought           = new Bought();
-        $bought->userid   = $user->id;
-        $bought->shopid   = $shop->id;
-        $bought->datetime = time();
-        if ($autorenew == 0 || $shop->auto_renew == 0) {
-            $bought->renew = 0;
-        } else {
-            $bought->renew = time() + $shop->auto_renew * 86400;
-        }
-
-        $price = $shop->price;
-        $bought->price = $price;
-        $bought->save();
-
-        $shop->buy($user);
-        $result['ret'] = 1;
-        $result['msg'] = '套餐添加成功';
-        return $response->withJson($result);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function search($request, $response, $args)
-    {
-        $pageNum = 1;
-        $text = $args['text'];
-        if (isset($request->getQueryParams()['page'])) {
-            $pageNum = $request->getQueryParams()['page'];
-        }
-
-        $users = User::where('email', 'LIKE', '%' . $text . '%')->orWhere('user_name', 'LIKE', '%' . $text . '%')->orWhere('im_value', 'LIKE', '%' . $text . '%')->orWhere('port', 'LIKE', '%' . $text . '%')->orWhere('remark', 'LIKE', '%' . $text . '%')->paginate(20, ['*'], 'page', $pageNum);
-
-        //Ip::where("datetime","<",time()-90)->get()->delete();
-        $total = Ip::where('datetime', '>=', time() - 90)->orderBy('userid', 'desc')->get();
-
-        $userip = array();
-        $useripcount = array();
-        $regloc = array();
-
-        $iplocation = new QQWry();
-        foreach ($users as $user) {
-            $useripcount[$user->id] = 0;
-            $userip[$user->id] = array();
-
-            $location = $iplocation->getlocation($user->reg_ip);
-            $regloc[$user->id] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-        }
-
-        foreach ($total as $single) {
-            if (isset($useripcount[$single->userid]) && !isset($userip[$single->userid][$single->ip])) {
-                ++$useripcount[$single->userid];
-                $location = $iplocation->getlocation($single->ip);
-                $userip[$single->userid][$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-            }
-        }
-
-        return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function sort($request, $response, $args)
-    {
-        $pageNum = 1;
-        $text = $args['text'];
-        $asc = $args['asc'];
-        if (isset($request->getQueryParams()['page'])) {
-            $pageNum = $request->getQueryParams()['page'];
-        }
-
-        $users->setPath('/admin/user/sort/' . $text . '/' . $asc);
-
-        //Ip::where("datetime","<",time()-90)->get()->delete();
-        $total = Ip::where('datetime', '>=', time() - 90)->orderBy('userid', 'desc')->get();
-
-        $userip = array();
-        $useripcount = array();
-        $regloc = array();
-
-        $iplocation = new QQWry();
-        foreach ($users as $user) {
-            $useripcount[$user->id] = 0;
-            $userip[$user->id] = array();
-
-            $location = $iplocation->getlocation($user->reg_ip);
-            $regloc[$user->id] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-        }
-
-        foreach ($total as $single) {
-            if (isset($useripcount[$single->userid]) && !isset($userip[$single->userid][$single->ip])) {
-                ++$useripcount[$single->userid];
-                $location = $iplocation->getlocation($single->ip);
-                $userip[$single->userid][$single->ip] = iconv('gbk', 'utf-8//IGNORE', $location['country'] . $location['area']);
-            }
-        }
-
-        return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
     }
 
     /**
