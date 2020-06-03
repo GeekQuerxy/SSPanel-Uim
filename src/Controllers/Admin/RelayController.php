@@ -15,9 +15,16 @@ use App\Utils\{
 use App\Services\Auth;
 use Ozdemir\Datatables\Datatables;
 use ArrayObject;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class RelayController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -33,6 +40,11 @@ class RelayController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/relay/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         $user = Auth::getUser();
@@ -67,6 +79,11 @@ class RelayController extends AdminController
         return $this->view()->assign('source_nodes', $source_nodes)->assign('dist_nodes', $dist_nodes)->display('admin/relay/add.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $dist_node_id = $request->getParam('dist_node');
@@ -79,7 +96,7 @@ class RelayController extends AdminController
         if ($source_node == null) {
             $rs['ret'] = 0;
             $rs['msg'] = '起源节点错误。';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         if ($source_node->sort == 12) {
@@ -87,14 +104,14 @@ class RelayController extends AdminController
             if (!Tools::relayRulePortCheck($rules)) {
                 $rs['ret'] = 0;
                 $rs['msg'] = '端口冲突请，请更换一个';
-                return $response->getBody()->write(json_encode($rs));
+                return $response->withJson($rs);
             }
         }
         $dist_node = Node::where('id', $dist_node_id)->first();
         if ($dist_node == null) {
             $rs['ret'] = 0;
             $rs['msg'] = '目标节点错误。';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $rule = new Relay();
@@ -120,20 +137,25 @@ class RelayController extends AdminController
             if ($maybe_rule_id == -1) {
                 $rs['msg'] = '您即将添加的规则可能会造成冲突！';
             }
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         if (!$rule->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '添加失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $id = $args['id'];
@@ -177,6 +199,11 @@ class RelayController extends AdminController
         return $this->view()->assign('rule', $rule)->assign('source_nodes', $source_nodes)->assign('dist_nodes', $dist_nodes)->display('admin/relay/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function update($request, $response, $args)
     {
         $id = $args['id'];
@@ -196,14 +223,14 @@ class RelayController extends AdminController
         if ($source_node == null && $source_node_id != 0) {
             $rs['ret'] = 0;
             $rs['msg'] = '起源节点 ID 错误。';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $dist_node = Node::where('id', $dist_node_id)->first();
         if ($dist_node == null) {
             $rs['ret'] = 0;
             $rs['msg'] = '目标节点 ID 错误。';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $rule->user_id = $user_id;
@@ -228,22 +255,26 @@ class RelayController extends AdminController
             if ($maybe_rule_id == -1) {
                 $rs['msg'] = '您即将添加的规则可能会造成冲突！';
             }
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
 
         if (!$rule->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '修改失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
-
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function delete($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -257,13 +288,18 @@ class RelayController extends AdminController
         if (!$rule->delete()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function path_search($request, $response, $args)
     {
         $uid = $args['id'];
@@ -365,6 +401,11 @@ class RelayController extends AdminController
         return $this->view()->assign('pathset', $pathset)->display('admin/relay/search.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_relay($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -379,7 +420,6 @@ class RelayController extends AdminController
             return ($data['user_id'] == 0 ? '全体用户' : $data['user_name']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

@@ -12,7 +12,7 @@ class TomatoPay extends AbstractPayment
         $type = $request->getParsedBodyParam('type');
         $price = $request->getParsedBodyParam('price');
         if ($price <= 0) {
-            return $response->write(json_encode(['errcode' => -1, 'errmsg' => "非法的金额."]));
+            return $response->withJson(['errcode' => -1, 'errmsg' => "非法的金额."]);
         }
         $user = Auth::getUser();
         $settings = $_ENV['tomatopay'][$type];
@@ -34,7 +34,7 @@ class TomatoPay extends AbstractPayment
             . $fqaccount . '&mchid=' . $fqmchid . '&type=1'
             . '&trade=' . $fqtrade . '&cny=' . $fqcny . '&signs=' . $signs;
         $result = "<script language='javascript' type='text/javascript'>window.location.href='" . $url . "';</script>";
-        return $response->write(json_encode(['code' => $result, 'errcode' => 0, 'pid' => $pl->id]));
+        return $response->withJson(['code' => $result, 'errcode' => 0, 'pid' => $pl->id]);
     }
 
     public function notify($request, $response, $args)
@@ -67,17 +67,17 @@ class TomatoPay extends AbstractPayment
                                         <br/>
                                         <nav class="tab-nav margin-top-no">
                                             <ul class="nav nav-list">
-                                            
-                                
+
+
                                                     <li>
                                                         <a class="waves-attach waves-effect type active" data-toggle="tab" data-pay="alipay"><img src="/images/alipay.jpg" height="50px"></img></a>
                                                     </li>
-                                            
+
                                                     <li>
                                                         <a class="waves-attach waves-effect type" data-toggle="tab" data-pay="wxpay"><img src="/images/weixin.jpg" height="50px"></img></a>
                                                     </li>
-                                            
-                
+
+
                                             </ul>
                                             <div class="tab-nav-indicator"></div>
                                         </nav>

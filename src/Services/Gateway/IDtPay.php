@@ -16,7 +16,7 @@ class IDtPay extends AbstractPayment
         $type = $request->getParsedBodyParam('type');
         $price = $request->getParsedBodyParam('price');
         if ($price <= 0) {
-            return $response->write(json_encode(['errcode' => -1, 'errmsg' => "非法的金额."]));
+            return $response->withJson(['errcode' => -1, 'errmsg' => "非法的金额."]);
         }
         $user = Auth::getUser();
         $pl = new Paylist();
@@ -75,7 +75,7 @@ class IDtPay extends AbstractPayment
         //建立请求
         $alipaySubmit = new AlipaySubmit($alipay_config);
         $html_text = $alipaySubmit->buildRequestForm($parameter);
-        return $response->write(json_encode(['code' => $html_text, 'errcode' => 0, 'pid' => $pl->id]));
+        return $response->withJson(['code' => $html_text, 'errcode' => 0, 'pid' => $pl->id]);
     }
 
     public function notify($request, $response, $args)

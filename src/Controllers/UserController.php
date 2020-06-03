@@ -2,63 +2,59 @@
 
 namespace App\Controllers;
 
-use App\Services\{
-    Auth,
-    Mail,
-    Config,
-    Payment,
-    BitPayment,
-    Gateway\ChenPay,
-};
-use App\Models\{
-    Ip,
-    Ann,
-    Code,
-    Node,
-    Shop,
-    User,
-    Token,
-    Relay,
-    Bought,
-    Coupon,
-    Ticket,
-    Payback,
-    BlockIp,
-    LoginIp,
-    UnblockIp,
-    Speedtest,
-    DetectLog,
-    DetectRule,
-    TrafficLog,
-    InviteCode,
-    UserSubscribeLog
-};
-use App\Utils\{
-    GA,
-    Pay,
-    URL,
-    Hash,
-    QQWry,
-    Tools,
-    Radius,
-    Cookie,
-    Geetest,
-    Telegram,
-    ClientProfiles,
-    DatatablesHelper,
-    TelegramSessionManager
-};
+use App\Services\Auth;
+use App\Services\Config;
+use App\Services\Payment;
+use App\Services\BitPayment;
+use App\Services\Gateway\ChenPay;
+use App\Models\Ip;
+use App\Models\Ann;
+use App\Models\Code;
+use App\Models\Node;
+use App\Models\Shop;
+use App\Models\User;
+use App\Models\Token;
+use App\Models\Bought;
+use App\Models\Coupon;
+use App\Models\Payback;
+use App\Models\BlockIp;
+use App\Models\LoginIp;
+use App\Models\UnblockIp;
+use App\Models\Speedtest;
+use App\Models\DetectLog;
+use App\Models\DetectRule;
+use App\Models\TrafficLog;
+use App\Models\InviteCode;
+use App\Models\UserSubscribeLog;
+use App\Utils\GA;
+use App\Utils\Pay;
+use App\Utils\URL;
+use App\Utils\Hash;
+use App\Utils\QQWry;
+use App\Utils\Tools;
+use App\Utils\Radius;
+use App\Utils\Cookie;
+use App\Utils\Geetest;
+use App\Utils\Telegram;
+use App\Utils\ClientProfiles;
+use App\Utils\TelegramSessionManager;
 use voku\helper\AntiXSS;
-use Exception;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  *  HomeController
  */
 class UserController extends BaseController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
-        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
+        $ssr_sub_token = $this->user->getSubscribeToken();
 
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -111,6 +107,11 @@ class UserController extends BaseController
             ->display('user/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function lookingglass($request, $response, $args)
     {
         $Speedtest = Speedtest::where('datetime', '>', time() - $_ENV['Speedtest_duration'] * 3600)->orderBy('datetime', 'desc')->get();
@@ -118,6 +119,11 @@ class UserController extends BaseController
         return $this->view()->assign('speedtest', $Speedtest)->assign('hour', $_ENV['Speedtest_duration'])->display('user/lookingglass.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function code($request, $response, $args)
     {
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -126,15 +132,25 @@ class UserController extends BaseController
         return $this->view()->assign('codes', $codes)->assign('pmw', Payment::purchaseHTML())->assign('bitpay', BitPayment::purchaseHTML())->display('user/code.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function orderDelete($request, $response, $args)
     {
         return (new ChenPay())->orderDelete($request);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function donate($request, $response, $args)
     {
         if ($_ENV['enable_donate'] != true) {
-            exit(0);
+            return;
         }
 
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -174,33 +190,48 @@ class UserController extends BaseController
         return false;
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function code_check($request, $response, $args)
     {
         $time = $request->getQueryParams()['time'];
         $codes = Code::where('userid', '=', $this->user->id)->where('usedatetime', '>', date('Y-m-d H:i:s', $time))->first();
         if ($codes != null && strpos($codes->code, '充值') !== false) {
             $res['ret'] = 1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $res['ret'] = 0;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function f2fpayget($request, $response, $args)
     {
         $time = $request->getQueryParams()['time'];
         $res['ret'] = 1;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function f2fpay($request, $response, $args)
     {
         $amount = $request->getParam('amount');
         if ($amount == '') {
             $res['ret'] = 0;
             $res['msg'] = '订单金额错误：' . $amount;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $user = $this->user;
 
@@ -233,15 +264,25 @@ class UserController extends BaseController
                 break;
         }
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function alipay($request, $response, $args)
     {
         $amount = $request->getQueryParams()['amount'];
         Pay::getGen($this->user, $amount);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function codepost($request, $response, $args)
     {
         $code = $request->getParam('code');
@@ -251,14 +292,14 @@ class UserController extends BaseController
         if ($code == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $codeq = Code::where('code', '=', $code)->where('isused', '=', 0)->first();
         if ($codeq == null) {
             $res['ret'] = 0;
             $res['msg'] = '此充值码错误';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $codeq->isused = 1;
@@ -296,7 +337,7 @@ class UserController extends BaseController
                 }
             }
 
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($codeq->type == 10001) {
@@ -324,6 +365,11 @@ class UserController extends BaseController
         }
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function GaCheck($request, $response, $args)
     {
         $code = $request->getParam('code');
@@ -333,7 +379,7 @@ class UserController extends BaseController
         if ($code == '') {
             $res['ret'] = 0;
             $res['msg'] = '二维码不能为空';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $ga = new GA();
@@ -341,15 +387,20 @@ class UserController extends BaseController
         if (!$rcode) {
             $res['ret'] = 0;
             $res['msg'] = '测试错误';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
 
         $res['ret'] = 1;
         $res['msg'] = '测试成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function GaSet($request, $response, $args)
     {
         $enable = $request->getParam('enable');
@@ -358,7 +409,7 @@ class UserController extends BaseController
         if ($enable == '') {
             $res['ret'] = 0;
             $res['msg'] = '选项无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->ga_enable = $enable;
@@ -367,18 +418,28 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '设置成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ResetPort($request, $response, $args)
     {
         $user = $this->user;
         $temp = $user->ResetPort();
         $res['msg'] = $temp['msg'];
         $res['ret'] = ($temp['ok'] === true ? 1 : 0);
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function SpecifyPort($request, $response, $args)
     {
         $user = $this->user;
@@ -386,9 +447,14 @@ class UserController extends BaseController
         $temp = $user->SpecifyPort($port);
         $res['msg'] = $temp['msg'];
         $res['ret'] = ($temp['ok'] === true ? 1 : 0);
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function GaReset($request, $response, $args)
     {
         $user = $this->user;
@@ -400,6 +466,11 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', '/user/edit');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function profile($request, $response, $args)
     {
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -452,12 +523,17 @@ class UserController extends BaseController
             $res['userloginip'] = $userloginip;
             $res['paybacks']    = $paybacks;
             $res['ret']         = 1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         };
 
         return $this->view()->assign('boughts', $boughts)->assign('userip', $userip)->assign('userloginip', $userloginip)->assign('paybacks', $paybacks)->display('user/profile.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function announcement($request, $response, $args)
     {
         $Anns = Ann::orderBy('date', 'desc')->get();
@@ -465,17 +541,27 @@ class UserController extends BaseController
         if ($request->getParam('json') == 1) {
             $res['Anns']      = $Anns;
             $res['ret']         = 1;
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         };
 
         return $this->view()->assign('anns', $Anns)->display('user/announcement.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function tutorial($request, $response, $args)
     {
         return $this->view()->display('user/tutorial.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $themes = Tools::getDir(BASE_PATH . '/resources/views');
@@ -505,6 +591,11 @@ class UserController extends BaseController
             ->display('user/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function invite($request, $response, $args)
     {
         $code = InviteCode::where('user_id', $this->user->id)->first();
@@ -523,6 +614,11 @@ class UserController extends BaseController
         return $this->view()->assign('code', $code)->assign('paybacks', $paybacks)->assign('paybacks_sum', $paybacks_sum)->display('user/invite.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function buyInvite($request, $response, $args)
     {
         $price = Config::getconfig('Register.int.invite_price');
@@ -532,7 +628,7 @@ class UserController extends BaseController
         if (!Tools::isInt($num) || $price < 0 || $num <= 0) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $amount = $price * $num;
@@ -541,13 +637,13 @@ class UserController extends BaseController
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($user->money < $amount) {
             $res['ret'] = 0;
             $res['msg'] = '余额不足，总价为' . $amount . '元。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $user->invite_num += $num;
         $user->money -= $amount;
@@ -555,9 +651,14 @@ class UserController extends BaseController
         $res['invite_num'] = $user->invite_num;
         $res['ret'] = 1;
         $res['msg'] = '邀请次数添加成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function customInvite($request, $response, $args)
     {
         $price      = Config::getconfig('Register.int.custom_invite_price');
@@ -567,26 +668,26 @@ class UserController extends BaseController
         if (!Tools::is_validate($customcode) || $price < 0 || $customcode == '' || strlen($customcode) > 32) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求,邀请链接后缀不能包含特殊符号且长度不能大于32字符';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (InviteCode::where('code', $customcode)->count() != 0) {
             $res['ret'] = 0;
             $res['msg'] = '此后缀名被抢注了';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($user->money < $price) {
             $res['ret'] = 0;
             $res['msg'] = '余额不足，总价为' . $price . '元。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $code = InviteCode::where('user_id', $user->id)->first();
         $code->code = $customcode;
@@ -595,7 +696,7 @@ class UserController extends BaseController
         $code->save();
         $res['ret'] = 1;
         $res['msg'] = '定制成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
     public function sys()
@@ -603,6 +704,11 @@ class UserController extends BaseController
         return $this->view()->assign('ana', '')->display('user/sys.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updatePassword($request, $response, $args)
     {
         $oldpwd = $request->getParam('oldpwd');
@@ -612,18 +718,18 @@ class UserController extends BaseController
         if (!Hash::checkPassword($user->pass, $oldpwd)) {
             $res['ret'] = 0;
             $res['msg'] = '旧密码错误';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         if ($pwd != $repwd) {
             $res['ret'] = 0;
             $res['msg'] = '两次输入不符合';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (strlen($pwd) < 8) {
             $res['ret'] = 0;
             $res['msg'] = '密码太短啦';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $hashPwd = Hash::passwordHash($pwd);
         $user->pass = $hashPwd;
@@ -633,9 +739,14 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '修改成功';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateHide($request, $response, $args)
     {
         $hide = $request->getParam('hide');
@@ -645,9 +756,14 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '修改成功';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function Unblock($request, $response, $args)
     {
         $user = $this->user;
@@ -664,15 +780,25 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = $_SERVER['REMOTE_ADDR'];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function shop($request, $response, $args)
     {
         $shops = Shop::where('status', 1)->orderBy('name')->get();
         return $this->view()->assign('shops', $shops)->display('user/shop.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function CouponCheck($request, $response, $args)
     {
         $coupon = $request->getParam('coupon');
@@ -682,7 +808,7 @@ class UserController extends BaseController
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $shop = $request->getParam('shop');
@@ -692,7 +818,7 @@ class UserController extends BaseController
         if ($shop == null) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($coupon == '') {
@@ -700,7 +826,7 @@ class UserController extends BaseController
             $res['name'] = $shop->name;
             $res['credit'] = '0 %';
             $res['total'] = $shop->price . '元';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $coupon = Coupon::where('code', $coupon)->first();
@@ -708,13 +834,13 @@ class UserController extends BaseController
         if ($coupon == null) {
             $res['ret'] = 0;
             $res['msg'] = '优惠码无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($coupon->order($shop->id) == false) {
             $res['ret'] = 0;
             $res['msg'] = '此优惠码不可用于此商品';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $use_limit = $coupon->onetime;
@@ -723,7 +849,7 @@ class UserController extends BaseController
             if ($use_count >= $use_limit) {
                 $res['ret'] = 0;
                 $res['msg'] = '优惠码次数已用完';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -732,10 +858,15 @@ class UserController extends BaseController
         $res['credit'] = $coupon->credit . ' %';
         $res['total'] = $shop->price * ((100 - $coupon->credit) / 100) . '元';
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
-    public function buy_traffic_package ($request, $response, $args)
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
+    public function buy_traffic_package($request, $response, $args)
     {
         $user = $this->user;
         $shop = $request->getParam('shop');
@@ -745,7 +876,7 @@ class UserController extends BaseController
         if ($shop == null || $shop->traffic_package() == 0) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $content = json_decode($shop->content);
@@ -753,18 +884,18 @@ class UserController extends BaseController
         if ($user->class < $content->traffic_package->class->min || $user->class > $content->traffic_package->class->max) {
             $res['ret'] = 0;
             $res['msg'] = '您当前的会员等级无法购买此流量包';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (bccomp($user->money, $price, 2) == -1) {
             $res['ret'] = 0;
             $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->money = bcsub($user->money, $price, 2);
@@ -784,9 +915,14 @@ class UserController extends BaseController
         $res['ret'] = 1;
         $res['msg'] = '购买成功';
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function buy($request, $response, $args)
     {
         $coupon = $request->getParam('coupon');
@@ -799,17 +935,15 @@ class UserController extends BaseController
         $shop = Shop::where('id', $shop)->where('status', 1)->first();
 
         $orders = Bought::where('userid', $this->user->id)->get();
-        foreach ($orders as $order)
-        {
-            $shop_item = Shop::where('id',$order['shopid'])->first();
+        foreach ($orders as $order) {
+            $shop_item = Shop::where('id', $order['shopid'])->first();
             $shop_item = json_decode($shop_item['content']);
             $shop_item->datetime = $order['datetime'];
-            if (array_key_exists('reset',$shop_item) || array_key_exists('reset_value',$shop_item) || array_key_exists('reset_exp',$shop_item))
-            {
-                if (time() < ($shop_item->datetime + $shop_item->reset_exp * 86400) ) {
+            if (array_key_exists('reset', $shop_item) || array_key_exists('reset_value', $shop_item) || array_key_exists('reset_exp', $shop_item)) {
+                if (time() < ($shop_item->datetime + $shop_item->reset_exp * 86400)) {
                     $res['ret'] = 0;
                     $res['msg'] = '您购买的含有自动重置系统的套餐还未过期，无法购买新套餐';
-                    return $response->getBody()->write(json_encode($res));
+                    return $response->withJson($res);
                 }
             }
         };
@@ -817,7 +951,7 @@ class UserController extends BaseController
         if ($shop == null) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($coupon == '') {
@@ -838,13 +972,13 @@ class UserController extends BaseController
             if ($coupon->order($shop->id) == false) {
                 $res['ret'] = 0;
                 $res['msg'] = '此优惠码不可用于此商品';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             if ($coupon->expire < time()) {
                 $res['ret'] = 0;
                 $res['msg'] = '此优惠码已过期';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -853,13 +987,13 @@ class UserController extends BaseController
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (bccomp($user->money, $price, 2) == -1) {
             $res['ret'] = 0;
             $res['msg'] = '喵喵喵~ 当前余额不足，总价为' . $price . '元。</br><a href="/user/code">点击进入充值界面</a>';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->money = bcsub($user->money, $price, 2);
@@ -897,9 +1031,14 @@ class UserController extends BaseController
         $res['ret'] = 1;
         $res['msg'] = '购买成功';
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function bought($request, $response, $args)
     {
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -913,11 +1052,16 @@ class UserController extends BaseController
                 $shop->content = $shop->shop()->content();
             };
             $res['shops'] = $shops;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         };
         return $this->view()->assign('shops', $shops)->display('user/bought.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function deleteBoughtGet($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -926,7 +1070,7 @@ class UserController extends BaseController
         if ($shop == null) {
             $rs['ret'] = 0;
             $rs['msg'] = '关闭自动续费失败，订单不存在。';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         if ($this->user->id == $shop->userid) {
@@ -936,13 +1080,18 @@ class UserController extends BaseController
         if (!$shop->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '关闭自动续费失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '关闭自动续费成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateWechat($request, $response, $args)
     {
         $type = $request->getParam('imtype');
@@ -954,20 +1103,20 @@ class UserController extends BaseController
         if ($user->telegram_id != 0) {
             $res['ret'] = 0;
             $res['msg'] = '您绑定了 Telegram ，所以此项并不能被修改。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($wechat == '' || $type == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user1 = User::where('im_value', $wechat)->where('im_type', $type)->first();
         if ($user1 != null) {
             $res['ret'] = 0;
             $res['msg'] = '此联络方式已经被注册';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->im_type = $type;
@@ -977,9 +1126,14 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '修改成功';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateSSR($request, $response, $args)
     {
         $protocol = $request->getParam('protocol');
@@ -992,19 +1146,19 @@ class UserController extends BaseController
         if ($obfs == '' || $protocol == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (!Tools::is_param_validate('obfs', $obfs)) {
             $res['ret'] = 0;
             $res['msg'] = '混淆无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (!Tools::is_param_validate('protocol', $protocol)) {
             $res['ret'] = 0;
             $res['msg'] = '协议无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $antiXss = new AntiXSS();
@@ -1016,13 +1170,13 @@ class UserController extends BaseController
         if (!Tools::checkNoneProtocol($user)) {
             $res['ret'] = 0;
             $res['msg'] = '系统检测到您目前的加密方式为 none ，但您将要设置为的协议并不在以下协议<br>' . implode(',', Config::getSupportParam('allow_none_protocol')) . '<br>之内，请您先修改您的加密方式，再来修改此处设置。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (!URL::SSCanConnect($user) && !URL::SSRCanConnect($user)) {
             $res['ret'] = 0;
             $res['msg'] = '您这样设置之后，就没有客户端能连接上了，所以系统拒绝了您的设置，请您检查您的设置之后再进行操作。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $user->save();
@@ -1030,20 +1184,25 @@ class UserController extends BaseController
         if (!URL::SSCanConnect($user)) {
             $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 Shadowsocks原版客户端无法连接，请您自行更换到 ShadowsocksR 客户端。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (!URL::SSRCanConnect($user)) {
             $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 ShadowsocksR 客户端无法连接，请您自行更换到 Shadowsocks 客户端。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $res['ret'] = 1;
         $res['msg'] = '设置成功，您可自由选用客户端来连接。';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateTheme($request, $response, $args)
     {
         $theme = $request->getParam('theme');
@@ -1053,7 +1212,7 @@ class UserController extends BaseController
         if ($theme == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->theme = filter_var($theme, FILTER_SANITIZE_STRING);
@@ -1061,9 +1220,14 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '设置成功';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateMail($request, $response, $args)
     {
         $value = (int) $request->getParam('mail');
@@ -1072,7 +1236,7 @@ class UserController extends BaseController
             if ($value == 2 && $_ENV['enable_telegram'] === false) {
                 $res['ret'] = 0;
                 $res['msg'] = '修改失败，当前无法使用 Telegram 接收每日报告';
-                return $this->echoJson($response, $res);
+                return $response->withJson($res);
             }
             $user->sendDailyMail = $value;
             $user->save();
@@ -1082,9 +1246,14 @@ class UserController extends BaseController
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
         }
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function PacSet($request, $response, $args)
     {
         $pac = $request->getParam('pac');
@@ -1094,7 +1263,7 @@ class UserController extends BaseController
         if ($pac == '') {
             $res['ret'] = 0;
             $res['msg'] = '输入不能为空';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->pac = $pac;
@@ -1102,9 +1271,14 @@ class UserController extends BaseController
 
         $res['ret'] = 1;
         $res['msg'] = '修改成功';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateSsPwd($request, $response, $args)
     {
         $user = Auth::getUser();
@@ -1114,13 +1288,13 @@ class UserController extends BaseController
         if ($pwd == '') {
             $res['ret'] = 0;
             $res['msg'] = '密码不能为空';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (!Tools::is_validate($pwd)) {
             $res['ret'] = 0;
             $res['msg'] = '密码无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->updateSsPwd($pwd);
@@ -1128,9 +1302,14 @@ class UserController extends BaseController
 
         Radius::Add($user, $pwd);
 
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function updateMethod($request, $response, $args)
     {
         $user = Auth::getUser();
@@ -1140,13 +1319,13 @@ class UserController extends BaseController
         if ($method == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (!Tools::is_param_validate('method', $method)) {
             $res['ret'] = 0;
             $res['msg'] = '加密无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->method = $method;
@@ -1154,13 +1333,13 @@ class UserController extends BaseController
         if (!Tools::checkNoneProtocol($user)) {
             $res['ret'] = 0;
             $res['msg'] = '系统检测到您将要设置的加密方式为 none ，但您的协议并不在以下协议<br>' . implode(',', Config::getSupportParam('allow_none_protocol')) . '<br>之内，请您先修改您的协议，再来修改此处设置。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (!URL::SSCanConnect($user) && !URL::SSRCanConnect($user)) {
             $res['ret'] = 0;
             $res['msg'] = '您这样设置之后，就没有客户端能连接上了，所以系统拒绝了您的设置，请您检查您的设置之后再进行操作。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $user->updateMethod($method);
@@ -1168,26 +1347,36 @@ class UserController extends BaseController
         if (!URL::SSCanConnect($user)) {
             $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 Shadowsocks原版客户端无法连接，请您自行更换到 ShadowsocksR 客户端。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (!URL::SSRCanConnect($user)) {
             $res['ret'] = 1;
             $res['msg'] = '设置成功，但您目前的协议，混淆，加密方式设置会导致 ShadowsocksR 客户端无法连接，请您自行更换到 Shadowsocks 客户端。';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $res['ret'] = 1;
         $res['msg'] = '设置成功，您可自由选用两种客户端来进行连接。';
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function logout($request, $response, $args)
     {
         Auth::logout();
         return $response->withStatus(302)->withHeader('Location', '/');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function doCheckIn($request, $response, $args)
     {
         if ($_ENV['enable_checkin_captcha'] == true) {
@@ -1208,21 +1397,21 @@ class UserController extends BaseController
             if (!$ret) {
                 $res['ret'] = 0;
                 $res['msg'] = '系统无法接受您的验证结果，请刷新页面后重试。';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
         if (strtotime($this->user->expire_in) < time()) {
             $res['ret'] = 0;
             $res['msg'] = '您的账户已过期，无法签到。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $checkin = $this->user->checkin();
         if ($checkin['ok'] === false) {
             $res['ret'] = 0;
             $res['msg'] = $checkin['msg'];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $res['msg'] = $checkin['msg'];
@@ -1234,14 +1423,24 @@ class UserController extends BaseController
             'unUsedTraffic' => $this->user->unusedTraffic(),
         );
         $res['ret'] = 1;
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function kill($request, $response, $args)
     {
         return $this->view()->display('user/kill.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function handleKill($request, $response, $args)
     {
         $user = Auth::getUser();
@@ -1254,7 +1453,7 @@ class UserController extends BaseController
         if (!Hash::checkPassword($user->pass, $passwd)) {
             $res['ret'] = 0;
             $res['msg'] = ' 密码错误';
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (Config::getconfig('Users.bool.enable_kill') == true) {
@@ -1266,9 +1465,14 @@ class UserController extends BaseController
             $res['ret'] = 0;
             $res['msg'] = '管理员不允许删除，如需删除请联系管理员。';
         }
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function trafficLog($request, $response, $args)
     {
         $traffic = TrafficLog::where('user_id', $this->user->id)->where('log_time', '>', time() - 3 * 86400)->orderBy('id', 'desc')->get();
@@ -1281,12 +1485,17 @@ class UserController extends BaseController
             }
             $res['traffic'] = $traffic;
 
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         return $this->view()->assign('logs', $traffic)->display('user/trafficlog.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function detect_index($request, $response, $args)
     {
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -1295,12 +1504,17 @@ class UserController extends BaseController
         if ($request->getParam('json') == 1) {
             $res['ret'] = 1;
             $res['logs'] = $logs;
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         return $this->view()->assign('rules', $logs)->display('user/detect_index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function detect_log($request, $response, $args)
     {
         $pageNum = $request->getQueryParams()['page'] ?? 1;
@@ -1314,20 +1528,30 @@ class UserController extends BaseController
                 $log->detect_rule_text = $log->DetectRule()->text;
                 $log->detect_rule_regex = $log->DetectRule()->regex;
                 $log->detect_rule_type = $log->DetectRule()->type;
-                $log->detect_rule_date = date('Y-m-d H:i:s',$log->datetime);
+                $log->detect_rule_date = date('Y-m-d H:i:s', $log->datetime);
             }
             $res['logs'] = $logs;
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         return $this->view()->assign('logs', $logs)->display('user/detect_log.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function disable($request, $response, $args)
     {
         return $this->view()->display('user/disable.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function telegram_reset($request, $response, $args)
     {
         $user = $this->user;
@@ -1335,6 +1559,11 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', '/user/edit');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function resetURL($request, $response, $args)
     {
         $user = $this->user;
@@ -1342,6 +1571,11 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', '/user');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function resetInviteURL($request, $response, $args)
     {
         $user = $this->user;
@@ -1349,6 +1583,11 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', '/user/invite');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function backtoadmin($request, $response, $args)
     {
         $userid = Cookie::get('uid');
@@ -1389,6 +1628,11 @@ class UserController extends BaseController
         return $response->withStatus(302)->withHeader('Location', $local);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getUserAllURL($request, $response, $args)
     {
         $user = $this->user;
@@ -1444,7 +1688,7 @@ class UserController extends BaseController
                 $log->area = iconv("gbk", "utf-8//IGNORE", $location['area']);
             }
             $res['subscribeLog_keep_days'] = $_ENV['subscribeLog_keep_days'];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         return $this->view()->assign('logs', $logs)->assign('iplocation', $iplocation)->fetch('user/subscribe_log.tpl');

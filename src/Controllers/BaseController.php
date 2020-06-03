@@ -44,18 +44,4 @@ class BaseController
     {
         return $this->view;
     }
-
-    // TODO: remove
-    /**
-     * Output JSON
-     *
-     * @param Response      $response
-     * @param array|object  $resource
-     *
-     * @return ResponseInterface
-     */
-    public function echoJson(Response $response, $resource)
-    {
-        return $response->withJson($resource);
-    }
 }

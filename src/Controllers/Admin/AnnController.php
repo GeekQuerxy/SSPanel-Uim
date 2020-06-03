@@ -14,24 +14,45 @@ use App\Utils\{
 use App\Services\Mail;
 use Ozdemir\Datatables\Datatables;
 use Exception;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class AnnController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
-        $table_config['total_column'] = array('op' => '操作', 'id' => 'ID',
-            'date' => '日期', 'content' => '内容');
-        $table_config['default_show_column'] = array('op', 'id',
-            'date', 'content');
+        $table_config['total_column'] = array(
+            'op' => '操作', 'id' => 'ID',
+            'date' => '日期', 'content' => '内容'
+        );
+        $table_config['default_show_column'] = array(
+            'op', 'id',
+            'date', 'content'
+        );
         $table_config['ajax_url'] = 'announcement/ajax';
         return $this->view()->assign('table_config', $table_config)->display('admin/announcement/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         return $this->view()->display('admin/announcement/create.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $issend = $request->getParam('issend');
@@ -49,7 +70,7 @@ class AnnController extends AdminController
             if (!$ann->save()) {
                 $rs['ret'] = 0;
                 $rs['msg'] = '添加失败';
-                return $response->getBody()->write(json_encode($rs));
+                return $response->withJson($rs);
             }
         }
         if ($PushBear == 1) {
@@ -75,8 +96,7 @@ class AnnController extends AdminController
                 try {
                     Mail::send($to, $subject, 'news/warn.tpl', [
                         'user' => $user, 'text' => $text
-                    ], [
-                    ]);
+                    ], []);
                 } catch (Exception $e) {
                     continue;
                 }
@@ -84,7 +104,7 @@ class AnnController extends AdminController
             if (count($users) == $_ENV['sendPageLimit']) {
                 $rs['ret'] = 2;
                 $rs['msg'] = $request->getParam('page') + 1;
-                return $response->getBody()->write(json_encode($rs));
+                return $response->withJson($rs);
             }
         }
 
@@ -102,9 +122,14 @@ class AnnController extends AdminController
         if ($issend != 1 && $PushBear != 1) {
             $rs['msg'] = '公告添加成功';
         }
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $id = $args['id'];
@@ -112,6 +137,11 @@ class AnnController extends AdminController
         return $this->view()->assign('ann', $ann)->display('admin/announcement/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function update($request, $response, $args)
     {
         $id = $args['id'];
@@ -124,17 +154,21 @@ class AnnController extends AdminController
         if (!$ann->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '修改失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         Telegram::SendMarkdown('公告更新：' . PHP_EOL . $request->getParam('markdown'));
 
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
-
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function delete($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -142,13 +176,18 @@ class AnnController extends AdminController
         if (!$ann->delete()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -163,7 +202,6 @@ class AnnController extends AdminController
             return 'row_1_' . $data['id'];
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

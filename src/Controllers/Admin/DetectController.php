@@ -9,9 +9,16 @@ use App\Utils\{
     DatatablesHelper
 };
 use Ozdemir\Datatables\Datatables;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class DetectController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -27,6 +34,11 @@ class DetectController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/detect/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function log($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -45,11 +57,21 @@ class DetectController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/detect/log.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         return $this->view()->display('admin/detect/add.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $rule = new DetectRule();
@@ -61,16 +83,21 @@ class DetectController extends AdminController
         if (!$rule->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '添加失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         Telegram::SendMarkdown('有新的审计规则：' . $rule->name);
 
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $id = $args['id'];
@@ -78,6 +105,11 @@ class DetectController extends AdminController
         return $this->view()->assign('rule', $rule)->display('admin/detect/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function update($request, $response, $args)
     {
         $id = $args['id'];
@@ -91,16 +123,21 @@ class DetectController extends AdminController
         if (!$rule->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '修改失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         Telegram::SendMarkdown('规则更新：' . PHP_EOL . $request->getParam('name'));
 
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function delete($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -108,13 +145,18 @@ class DetectController extends AdminController
         if (!$rule->delete()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_rule($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -129,10 +171,14 @@ class DetectController extends AdminController
             return $data['type'] == 1 ? '数据包明文匹配' : '数据包十六进制匹配';
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_log($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -146,7 +192,6 @@ class DetectController extends AdminController
             return date('Y-m-d H:i:s', $data['datetime']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

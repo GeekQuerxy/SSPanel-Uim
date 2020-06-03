@@ -17,7 +17,8 @@ use App\Utils\{
     Tools,
     Geetest,
     TelegramSessionManager,
-    Cookie
+    Cookie,
+    Radius
 };
 use App\Services\{
     Auth,
@@ -28,6 +29,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class VueController extends BaseController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getGlobalConfig($request, $response, $args)
     {
         $GtSdk = null;
@@ -88,23 +94,33 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function vuelogout($request, $response, $args)
     {
         Auth::logout();
         $res['ret'] = 1;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getUserInfo($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $pre_user = URL::cloneUser($user);
@@ -179,9 +195,14 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function telegramReset($request, $response, $args)
     {
         $user = $this->user;
@@ -189,16 +210,21 @@ class VueController extends BaseController
         $user->save();
         $res['ret'] = 1;
         $res['msg'] = '解绑成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getUserInviteInfo($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $code = InviteCode::where('user_id', $user->id)->first();
@@ -214,8 +240,7 @@ class VueController extends BaseController
             $paybacks_sum = 0;
         }
         $paybacks->setPath('/#/user/panel');
-        foreach ($paybacks as $payback)
-        {
+        foreach ($paybacks as $payback) {
             $payback['user_name'] = $payback->user() != null ? $payback->user()->user_name : '已注销';
         };
 
@@ -233,16 +258,21 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getUserShops($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $shops = Shop::where('status', 1)->orderBy('name')->get();
@@ -252,16 +282,21 @@ class VueController extends BaseController
         );
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getAllResourse($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $res['resourse'] = array(
@@ -275,16 +310,21 @@ class VueController extends BaseController
         );
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getNewSubToken($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->clean_link();
@@ -296,16 +336,21 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getNewInviteCode($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user->clear_inviteCodes();
@@ -321,16 +366,21 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getTransfer($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $res['arr'] = array(
@@ -341,9 +391,14 @@ class VueController extends BaseController
 
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getCaptcha($request, $response, $args)
     {
         $GtSdk = null;
@@ -363,16 +418,21 @@ class VueController extends BaseController
         }
 
         $res['respon'] = 1;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getChargeLog($request, $response, $args)
     {
         $user = $this->user;
 
         if (!$user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $pageNum = $request->getParam('current');
@@ -383,16 +443,21 @@ class VueController extends BaseController
         $res['codes'] = $codes;
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getNodeList($request, $response, $args)
     {
         $user = Auth::getUser();
 
         if (!$this->user->isLogin) {
             $res['ret'] = -1;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
@@ -490,7 +555,7 @@ class VueController extends BaseController
         );
         $res['ret'] = 1;
 
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
     /**
@@ -598,7 +663,8 @@ class VueController extends BaseController
             case 10:
                 if ((($user->class >= $node->node_class
                         && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin)
-                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)
+                ) {
 
                     $res = [
                         'ret' => 1,
@@ -628,41 +694,44 @@ class VueController extends BaseController
             case 11:
                 if ((($user->class >= $node->node_class
                         && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin)
-                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)
+                ) {
 
-                        $res = [
-                            'ret' => 1,
-                            'nodeInfo' => [
-                                'node' => URL::getV2Url($user, $node, true),
-                                'user' => $user,
-                            ],
-                            'vmessUrl' => URL::getV2Url($user, $node, false)
-                        ];
+                    $res = [
+                        'ret' => 1,
+                        'nodeInfo' => [
+                            'node' => URL::getV2Url($user, $node, true),
+                            'user' => $user,
+                        ],
+                        'vmessUrl' => URL::getV2Url($user, $node, false)
+                    ];
 
-                        return $response->withJson($res);
+                    return $response->withJson($res);
                 }
                 break;
             case 12:
                 if ((($user->class >= $node->node_class
                         && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin)
-                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)
+                ) {
 
-                        $res = [
-                            'ret' => 1,
-                            'nodeInfo' => [
-                                'node' => URL::getV2Url($user, $node, true),
-                                'user' => $user,
-                            ],
-                            'vmessUrl' => URL::getV2Url($user, $node, false)
-                        ];
+                    $res = [
+                        'ret' => 1,
+                        'nodeInfo' => [
+                            'node' => URL::getV2Url($user, $node, true),
+                            'user' => $user,
+                        ],
+                        'vmessUrl' => URL::getV2Url($user, $node, false)
+                    ];
 
-                        return $response->withJson($res);
+                    return $response->withJson($res);
                 }
                 break;
             case 13:
                 if ((($user->class >= $node->node_class
                         && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin)
-                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
+                    && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)
+                ) {
 
                     $res = [
                         'ret' => 1,
@@ -700,6 +769,11 @@ class VueController extends BaseController
         ]);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getConnectSettings($request, $response, $args)
     {
         $config_service = new Config();

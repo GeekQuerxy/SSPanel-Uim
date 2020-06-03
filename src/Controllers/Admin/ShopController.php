@@ -9,9 +9,16 @@ use App\Models\{
 };
 use App\Utils\DatatablesHelper;
 use Ozdemir\Datatables\Datatables;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class ShopController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -28,11 +35,21 @@ class ShopController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/shop/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         return $this->view()->display('admin/shop/create.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $shop = new Shop();
@@ -91,13 +108,18 @@ class ShopController extends AdminController
         if (!$shop->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '添加失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $id = $args['id'];
@@ -105,6 +127,11 @@ class ShopController extends AdminController
         return $this->view()->assign('shop', $shop)->display('admin/shop/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function update($request, $response, $args)
     {
         $id = $args['id'];
@@ -176,13 +203,18 @@ class ShopController extends AdminController
         if (!$shop->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '保存失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '保存成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function deleteGet($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -191,7 +223,7 @@ class ShopController extends AdminController
         if (!$shop->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '下架失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $boughts = Bought::where('shopid', $id)->get();
@@ -203,9 +235,14 @@ class ShopController extends AdminController
 
         $rs['ret'] = 1;
         $rs['msg'] = '下架成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function bought($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -223,6 +260,11 @@ class ShopController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/shop/bought.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function deleteBoughtGet($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -231,13 +273,18 @@ class ShopController extends AdminController
         if (!$shop->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '退订失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '退订成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_shop($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -282,10 +329,14 @@ class ShopController extends AdminController
             return $sales;
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_bought($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -316,7 +367,6 @@ class ShopController extends AdminController
             return date('Y-m-d H:i:s', $data['datetime']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

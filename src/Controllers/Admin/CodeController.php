@@ -13,9 +13,16 @@ use App\Utils\{
 };
 use App\Services\Auth;
 use Ozdemir\Datatables\Datatables;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class CodeController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -32,16 +39,31 @@ class CodeController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/code/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         return $this->view()->display('admin/code/add.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function donate_create($request, $response, $args)
     {
         return $this->view()->display('admin/code/add_donate.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $n = $request->getParam('amount');
@@ -51,7 +73,7 @@ class CodeController extends AdminController
         if (Tools::isInt($n) == false) {
             $rs['ret'] = 0;
             $rs['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         for ($i = 0; $i < $n; $i++) {
@@ -67,9 +89,14 @@ class CodeController extends AdminController
 
         $rs['ret'] = 1;
         $rs['msg'] = '充值码添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function donate_add($request, $response, $args)
     {
         $amount = $request->getParam('amount');
@@ -88,9 +115,14 @@ class CodeController extends AdminController
 
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_code($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -143,7 +175,6 @@ class CodeController extends AdminController
             return $data['usedatetime'] > '2000-1-1 0:0:0' ? $data['usedatetime'] : '未使用';
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

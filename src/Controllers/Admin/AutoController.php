@@ -6,9 +6,16 @@ use App\Controllers\AdminController;
 use App\Models\Auto;
 use App\Utils\DatatablesHelper;
 use Ozdemir\Datatables\Datatables;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class AutoController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -23,11 +30,21 @@ class AutoController extends AdminController
         return $this->view()->assign('table_config', $table_config)->display('admin/auto/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function create($request, $response, $args)
     {
         return $this->view()->display('admin/auto/add.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function add($request, $response, $args)
     {
         $auto = new Auto();
@@ -39,13 +56,18 @@ class AutoController extends AdminController
         if (!$auto->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '添加失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '添加成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function delete($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -53,13 +75,18 @@ class AutoController extends AdminController
         if (!$auto->delete()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -73,7 +100,6 @@ class AutoController extends AdminController
             return $data['type'] == 1 ? '命令下发' : '命令被执行';
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

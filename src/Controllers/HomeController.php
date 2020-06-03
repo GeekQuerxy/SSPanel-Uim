@@ -172,9 +172,9 @@ class HomeController extends BaseController
         if (!$key || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->write(json_encode($res));
+            return $response->withJson($res);
         }
-        return $response->write(json_encode(['data' => AliPay::getList()]));
+        return $response->withJson(['data' => AliPay::getList()]);
     }
 
     /**
@@ -190,9 +190,9 @@ class HomeController extends BaseController
         if (!$key || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->write(json_encode($res));
+            return $response->withJson($res);
         }
-        return $response->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
+        return $response->withJson(['res' => AliPay::setOrder($sn, $url)]);
     }
 
     /**

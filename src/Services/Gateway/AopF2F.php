@@ -36,7 +36,7 @@ class AopF2F extends AbstractPayment
         if ($amount == '') {
             $res['ret'] = 0;
             $res['msg'] = '订单金额错误：' . $amount;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $pl = new Paylist();

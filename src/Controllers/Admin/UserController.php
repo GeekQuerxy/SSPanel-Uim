@@ -26,9 +26,16 @@ use App\Utils\{
 };
 use Exception;
 use App\Utils\DatatablesHelper;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class UserController extends AdminController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -75,6 +82,11 @@ class UserController extends AdminController
             ->display('admin/user/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function createNewUser($request, $response, $args)
     {
         # 需要一个 userEmail
@@ -89,14 +101,14 @@ class UserController extends AdminController
         //if (!Check::isEmailLegal($email)) {
         //    $res['ret'] = 0;
         //   $res['msg'] = '邮箱无效';
-        //   return $response->getBody()->write(json_encode($res));
+        //   return $response->withJson($res);
         //}
         // check email
         $user = User::where('email', $email)->first();
         if ($user != null) {
             $res['ret'] = 0;
             $res['msg'] = '邮箱已经被注册了';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         // do reg user
         $user                       = new User();
@@ -173,13 +185,18 @@ class UserController extends AdminController
             } catch (Exception $e) {
                 $res['email_error'] = $e->getMessage();
             }
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $res['ret'] = 0;
         $res['msg'] = '未知错误';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function buy($request, $response, $args)
     {
         #shop 信息可以通过 App\Controllers\UserController:shop 获得
@@ -194,12 +211,12 @@ class UserController extends AdminController
         if ($user == null) {
             $result['ret'] = 0;
             $result['msg'] = '未找到该用户';
-            return $response->getBody()->write(json_encode($result));
+            return $response->withJson($result);
         }
         if ($shop == null) {
             $result['ret'] = 0;
             $result['msg'] = '请选择套餐';
-            return $response->getBody()->write(json_encode($result));
+            return $response->withJson($result);
         }
         if ($disableothers == 1) {
             $boughts = Bought::where('userid', $user->id)->get();
@@ -225,9 +242,14 @@ class UserController extends AdminController
         $shop->buy($user);
         $result['ret'] = 1;
         $result['msg'] = '套餐添加成功';
-        return $response->getBody()->write(json_encode($result));
+        return $response->withJson($result);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function search($request, $response, $args)
     {
         $pageNum = 1;
@@ -265,6 +287,11 @@ class UserController extends AdminController
         return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function sort($request, $response, $args)
     {
         $pageNum = 1;
@@ -303,6 +330,11 @@ class UserController extends AdminController
         return $this->view()->assign('users', $users)->assign('regloc', $regloc)->assign('useripcount', $useripcount)->assign('userip', $userip)->display('admin/user/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function edit($request, $response, $args)
     {
         $id = $args['id'];
@@ -310,6 +342,11 @@ class UserController extends AdminController
         return $this->view()->assign('edit_user', $user)->display('admin/user/edit.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function update($request, $response, $args)
     {
         $id = $args['id'];
@@ -389,13 +426,18 @@ class UserController extends AdminController
         if (!$user->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = '修改失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '修改成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function delete($request, $response, $args)
     {
         $id = $request->getParam('id');
@@ -403,13 +445,18 @@ class UserController extends AdminController
         if (!$user->kill_user()) {
             $rs['ret'] = 0;
             $rs['msg'] = '删除失败';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
         $rs['ret'] = 1;
         $rs['msg'] = '删除成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function changetouser($request, $response, $args)
     {
         $userid     = $request->getParam('userid');
@@ -421,7 +468,7 @@ class UserController extends AdminController
         if (!$admin->is_admin || !$user || !Auth::getUser()->isLogin) {
             $rs['ret'] = 0;
             $rs['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         Cookie::set([
@@ -439,9 +486,14 @@ class UserController extends AdminController
         ], $expire_in);
         $rs['ret'] = 1;
         $rs['msg'] = '切换成功';
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax($request, $response, $args)
     {
         //得到排序的方式

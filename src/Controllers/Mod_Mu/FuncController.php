@@ -12,18 +12,30 @@ use App\Models\{
     Speedtest,
     DetectRule
 };
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class FuncController extends BaseController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ping($request, $response, $args)
     {
         $res = [
             'ret' => 1,
             'data' => 'pong'
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function get_detect_logs($request, $response, $args)
     {
         $rules = DetectRule::all();
@@ -32,7 +44,7 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => $rules
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
     public function get_dis_node_info($nodeid)
@@ -45,6 +57,11 @@ class FuncController extends BaseController
         return $node;
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function get_relay_rules($request, $response, $args)
     {
         $params = $request->getQueryParams();
@@ -83,9 +100,14 @@ class FuncController extends BaseController
             ];
         }
 
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function get_blockip($request, $response, $args)
     {
         $block_ips = BlockIp::Where('datetime', '>', time() - 60)->get();
@@ -94,9 +116,14 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => $block_ips
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function get_unblockip($request, $response, $args)
     {
         $unblock_ips = UnblockIp::Where('datetime', '>', time() - 60)->get();
@@ -105,9 +132,14 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => $unblock_ips
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function addBlockIp($request, $response, $args)
     {
         $params = $request->getQueryParams();
@@ -123,7 +155,7 @@ class FuncController extends BaseController
             $res = [
                 'ret' => 0
             ];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (count($data) > 0) {
@@ -148,9 +180,14 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => 'ok',
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function addSpeedtest($request, $response, $args)
     {
         $params = $request->getQueryParams();
@@ -166,7 +203,7 @@ class FuncController extends BaseController
             $res = [
                 'ret' => 0
             ];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (count($data) > 0) {
@@ -194,9 +231,14 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => 'ok',
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function get_autoexec($request, $response, $args)
     {
         $params = $request->getQueryParams();
@@ -211,7 +253,7 @@ class FuncController extends BaseController
             $res = [
                 'ret' => 0
             ];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         $autos_raw = Auto::where('datetime', '>', time() - 60)->where('type', '1')->get();
@@ -229,9 +271,14 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => $autos,
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function addAutoexec($request, $response, $args)
     {
         $params = $request->getQueryParams();
@@ -247,7 +294,7 @@ class FuncController extends BaseController
             $res = [
                 'ret' => 0
             ];
-            return $this->echoJson($response, $res);
+            return $response->withJson($res);
         }
 
         if (count($data) > 0) {
@@ -266,6 +313,6 @@ class FuncController extends BaseController
             'ret' => 1,
             'data' => 'ok',
         ];
-        return $this->echoJson($response, $res);
+        return $response->withJson($res);
     }
 }

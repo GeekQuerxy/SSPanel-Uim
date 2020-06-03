@@ -16,39 +16,71 @@ use App\Services\{
     Gateway\ChenPay
 };
 use Ozdemir\Datatables\Datatables;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  *  Admin Controller
  */
 class AdminController extends UserController
 {
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function index($request, $response, $args)
     {
         $sts = new Analytics();
         return $this->view()->assign('sts', $sts)->display('admin/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function node($request, $response, $args)
     {
         $nodes = Node::all();
         return $this->view()->assign('nodes', $nodes)->display('admin/node.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function editConfig($request, $response, $args)
     {
         return (new ChenPay())->editConfig();
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function saveConfig($request, $response, $args)
     {
         return (new ChenPay())->saveConfig($request);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function sys()
     {
         return $this->view()->display('admin/index.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function invite($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -66,6 +98,11 @@ class AdminController extends UserController
         return $this->view()->assign('table_config', $table_config)->display('admin/invite.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function chgInvite($request, $response, $args)
     {
         $prefix = $request->getParam('prefix');
@@ -80,7 +117,7 @@ class AdminController extends UserController
             if ($user == null) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请者更改失败，检查用户id是否输入正确';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
             $uid = $user->id;
         } else {
@@ -90,9 +127,14 @@ class AdminController extends UserController
         $user->save();
         $res['ret'] = 1;
         $res['msg'] = '邀请者更改成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function addInvite($request, $response, $args)
     {
         $num = $request->getParam('num');
@@ -101,7 +143,7 @@ class AdminController extends UserController
         if (Tools::isInt($num) == false) {
             $res['ret'] = 0;
             $res['msg'] = '非法请求';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($request->getParam('uid') != '0') {
@@ -114,7 +156,7 @@ class AdminController extends UserController
             if ($user == null) {
                 $res['ret'] = 0;
                 $res['msg'] = '邀请次数添加失败，检查用户id或者用户邮箱是否输入正确';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
             $uid = $user->id;
         } else {
@@ -124,9 +166,14 @@ class AdminController extends UserController
         $user->save();
         $res['ret'] = 1;
         $res['msg'] = '邀请次数添加成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function coupon($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -142,6 +189,11 @@ class AdminController extends UserController
         return $this->view()->assign('table_config', $table_config)->display('admin/coupon.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function addCoupon($request, $response, $args)
     {
         $code = new Coupon();
@@ -152,14 +204,14 @@ class AdminController extends UserController
         if (empty($final_code) && ($generate_type == 1 || $generate_type == 3)) {
             $res['ret'] = 0;
             $res['msg'] = '优惠码不能为空';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($generate_type == 1) {
             if (Coupon::where('code', $final_code)->count() != 0) {
                 $res['ret'] = 0;
                 $res['msg'] = '优惠码已存在';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         } else {
             while (true) {
@@ -185,9 +237,14 @@ class AdminController extends UserController
 
         $res['ret'] = 1;
         $res['msg'] = '优惠码添加成功';
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function trafficLog($request, $response, $args)
     {
         $table_config['total_column'] = array(
@@ -207,6 +264,11 @@ class AdminController extends UserController
         return $this->view()->assign('table_config', $table_config)->display('admin/trafficlog.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_trafficLog($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -220,10 +282,14 @@ class AdminController extends UserController
             return Tools::flowAutoShow($data['origin_traffic']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_payback($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -233,10 +299,14 @@ class AdminController extends UserController
             return date('Y-m-d H:i:s', $data['datetime']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function ajax_coupon($request, $response, $args)
     {
         $datatables = new Datatables(new DatatablesHelper());
@@ -246,7 +316,6 @@ class AdminController extends UserController
             return date('Y-m-d H:i:s', $data['expire']);
         });
 
-        $body = $response->getBody();
-        $body->write($datatables->generate());
+        return $response->write($datatables->generate());
     }
 }

@@ -24,6 +24,8 @@ use App\Services\{
 };
 use voku\helper\AntiXSS;
 use Exception;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 /**
  *  AuthController
@@ -66,6 +68,11 @@ class AuthController extends BaseController
             ->display('auth/login.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function getCaptcha($request, $response, $args)
     {
         $GtSdk = null;
@@ -85,9 +92,14 @@ class AuthController extends BaseController
         }
 
         $res['respon'] = 1;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function loginHandle($request, $response, $args)
     {
         // $data = $request->post('sdf');
@@ -116,7 +128,7 @@ class AuthController extends BaseController
             if (!$ret) {
                 $res['ret'] = 0;
                 $res['msg'] = '系统无法接受您的验证结果，请刷新页面后重试。';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -126,7 +138,7 @@ class AuthController extends BaseController
         if ($user == null) {
             $rs['ret'] = 0;
             $rs['msg'] = '邮箱不存在';
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         if (!Hash::checkPassword($user->pass, $passwd)) {
@@ -141,7 +153,7 @@ class AuthController extends BaseController
             $loginIP->type = 1;
             $loginIP->save();
 
-            return $response->getBody()->write(json_encode($rs));
+            return $response->withJson($rs);
         }
 
         $time = 3600 * 24;
@@ -156,7 +168,7 @@ class AuthController extends BaseController
             if (!$rcode) {
                 $res['ret'] = 0;
                 $res['msg'] = '两步验证码错误，如果您是丢失了生成器或者错误地设置了这个选项，您可以尝试重置密码，即可取消这个选项。';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -171,9 +183,14 @@ class AuthController extends BaseController
         $loginIP->type = 0;
         $loginIP->save();
 
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function qrcode_loginHandle($request, $response, $args)
     {
         // $data = $request->post('sdf');
@@ -184,7 +201,7 @@ class AuthController extends BaseController
         if (!$ret) {
             $res['ret'] = 0;
             $res['msg'] = '此令牌无法被使用。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
 
@@ -199,7 +216,7 @@ class AuthController extends BaseController
 
         $this->logUserIp($user->id, $_SERVER['REMOTE_ADDR']);
 
-        return $response->getBody()->write(json_encode($rs));
+        return $response->withJson($rs);
     }
 
     private function logUserIp($id, $ip)
@@ -212,6 +229,11 @@ class AuthController extends BaseController
         $loginip->save();
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param mixed     $next
+     */
     public function register($request, $response, $next)
     {
         $ary = $request->getQueryParams();
@@ -257,6 +279,11 @@ class AuthController extends BaseController
             ->display('auth/register.tpl');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param mixed     $next
+     */
     public function sendVerify($request, $response, $next)
     {
         if (Config::getconfig('Register.bool.Enable_email_verify')) {
@@ -266,28 +293,28 @@ class AuthController extends BaseController
             if ($email == '') {
                 $res['ret'] = 0;
                 $res['msg'] = '未填写邮箱';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             // check email format
             if (!Check::isEmailLegal($email)) {
                 $res['ret'] = 0;
                 $res['msg'] = '邮箱无效';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             $user = User::where('email', '=', $email)->first();
             if ($user != null) {
                 $res['ret'] = 0;
                 $res['msg'] = '此邮箱已经注册';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             $ipcount = EmailVerify::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('expire_in', '>', time())->count();
             if ($ipcount >= Config::getconfig('Register.int.Email_verify_iplimit')) {
                 $res['ret'] = 0;
                 $res['msg'] = '此IP请求次数过多';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
 
@@ -295,7 +322,7 @@ class AuthController extends BaseController
             if ($mailcount >= 3) {
                 $res['ret'] = 0;
                 $res['msg'] = '此邮箱请求次数过多';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             $code = Tools::genRandomNum(6);
@@ -318,15 +345,15 @@ class AuthController extends BaseController
             } catch (Exception $e) {
                 $res['ret'] = 1;
                 $res['msg'] = '邮件发送失败，请联系网站管理员。';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
 
             $res['ret'] = 1;
             $res['msg'] = '验证码发送成功，请查收邮件。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         $res['ret'] = 0;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
     public function register_helper($name, $email, $passwd, $code, $imtype, $imvalue, $telegram_id)
@@ -444,12 +471,16 @@ class AuthController extends BaseController
         return $res;
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     */
     public function registerHandle($request, $response)
     {
         if (Config::getconfig('Register.string.Mode') === 'close') {
             $res['ret'] = 0;
             $res['msg'] = '未开放注册。';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $name = $request->getParam('name');
@@ -486,7 +517,7 @@ class AuthController extends BaseController
             if (!$ret) {
                 $res['ret'] = 0;
                 $res['msg'] = '系统无法接受您的验证结果，请刷新页面后重试。';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -494,14 +525,14 @@ class AuthController extends BaseController
         if (!Check::isEmailLegal($email)) {
             $res['ret'] = 0;
             $res['msg'] = '邮箱无效';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         // check email
         $user = User::where('email', $email)->first();
         if ($user != null) {
             $res['ret'] = 0;
             $res['msg'] = '邮箱已经被注册了';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if (Config::getconfig('Register.bool.Enable_email_verify')) {
@@ -509,7 +540,7 @@ class AuthController extends BaseController
             if ($mailcount == null) {
                 $res['ret'] = 0;
                 $res['msg'] = '您的邮箱验证码不正确';
-                return $response->getBody()->write(json_encode($res));
+                return $response->withJson($res);
             }
         }
 
@@ -517,41 +548,51 @@ class AuthController extends BaseController
         if (strlen($passwd) < 8) {
             $res['ret'] = 0;
             $res['msg'] = '密码请大于8位';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         // check pwd re
         if ($passwd != $repasswd) {
             $res['ret'] = 0;
             $res['msg'] = '两次密码输入不符';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($imtype == '' || $imvalue == '') {
             $res['ret'] = 0;
             $res['msg'] = '请填上你的联络方式';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $user = User::where('im_value', $imvalue)->where('im_type', $imtype)->first();
         if ($user != null) {
             $res['ret'] = 0;
             $res['msg'] = '此联络方式已注册';
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
         if (Config::getconfig('Register.bool.Enable_email_verify')) {
             EmailVerify::where('email', '=', $email)->delete();
         }
         $res = $this->register_helper($name, $email, $passwd, $code, $imtype, $imvalue, 0);
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param mixed     $next
+     */
     public function logout($request, $response, $next)
     {
         Auth::logout();
         return $response->withStatus(302)->withHeader('Location', '/auth/login');
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function qrcode_check($request, $response, $args)
     {
         $token = $request->getParam('token');
@@ -559,19 +600,24 @@ class AuthController extends BaseController
         $user = Auth::getUser();
         if ($user->isLogin) {
             $res['ret'] = 0;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         if ($_ENV['enable_telegram'] === true) {
             $ret = TelegramSessionManager::check_login_session($token, $number);
             $res['ret'] = $ret;
-            return $response->getBody()->write(json_encode($res));
+            return $response->withJson($res);
         }
 
         $res['ret'] = 0;
-        return $response->getBody()->write(json_encode($res));
+        return $response->withJson($res);
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public function telegram_oauth($request, $response, $args)
     {
         if ($_ENV['enable_telegram'] === true) {
