@@ -246,10 +246,31 @@ $_ENV['Clash_Profiles'] = [
             'socks-port'          => 7891,
             'redir-port'          => 7892,
             'allow-lan'           => false,
-            'mode'                => 'Rule',
+            'mode'                => 'rule',
             'log-level'           => 'silent',
             'external-controller' => '0.0.0.0:9090',
             'secret'              => ''
+        ],
+        'DNS' => [
+            'enable'              => true,
+            'ipv6'                => false,
+            'listen'              => '0.0.0.0:53',
+            'enhanced-mode'       => 'fake-ip',
+            'fake-ip-range'       => '198.18.0.1/16',
+            'nameserver'=>[
+                '114.114.114.114',
+                'tcp://223.5.5.5'
+            ],
+            'fallback'=>[
+                'tls://223.5.5.5:853',
+                'https://223.5.5.5/dns-query'
+            ],
+            'fallback-filter'=>[
+                'geoip'=> true,
+                'ipcidr'=>[
+                    '240.0.0.0/4'
+                ]
+            ]
         ],
         'Proxy' => [],
         'ProxyGroup' => [

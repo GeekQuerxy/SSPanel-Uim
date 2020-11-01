@@ -90,4 +90,10 @@
 </nav>
 *}
 
-{if $config['enable_mylivechat'] === true}{include file='mylivechat.tpl'}{/if}
+{if $config['live_chat'] === 'mylivechat'}
+    {include file='mylivechat.tpl'}
+{elseif $config['live_chat'] === 'crisp'}
+    {include file='crisp.tpl'}
+{elseif $config['live_chat'] === 'tawk'}
+    {include file='tawk.tpl'}
+{/if}

@@ -442,14 +442,17 @@ table tr td:first-child {
 													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ssr']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>.<a id="general_ssr" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssr","#general_ssr","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
 												</p>
 												<hr/>
-												<p>众所周知，由于当前 V2Ray 暂无统一格式的订阅.</p>
-												<p>如您使用 V2Ray 节点，并且您所使用的客户端不在我们的支持内，且其不支持 V2RayN 格式的订阅，那么请您考虑更换客户端或与我们的客服联系.</p>
+												<p>如您使用 V2Ray/Trojan 订阅，请确认您的服务内包含该类协议的节点，若您所使用的客户端不在我们的支持内，那么请您考虑更换客户端或与我们的客服联系.</p>
 												<p><span class="icon icon-lg text-white">filter_3</span> [ V2RayN ]：
 													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['v2ray']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>.<a id="general_v2ray" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#general_v2ray","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
 												</p>
 												<hr/>
 												<p><span class="icon icon-lg text-white">filter_4</span> [ Trojan ]：
 													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['trojan']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
+												</p>
+												<hr/>
+												<p><span class="icon icon-lg text-white">filter_5</span> [ Clash ]：
+													<a class="copy-text btn-dl" data-clipboard-text="{$subInfo['clash']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
 												</p>
 											</div>
 
@@ -470,25 +473,7 @@ table tr td:first-child {
                                                         <a id="win_ss" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ss","#win_ss","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_2</span> SSD - [ SS ]：</p>
-													<p>
-                                                        应用下载：
-                                                        <a class="btn-dl" href="{if $config["subscribe_client"]===true}{if $config["subscribe_client_url"]==''}/user/getPcClient{else}{$config["subscribe_client_url"]}/getClient/{$getClient}{/if}?type=ssd-win{else}/ssr-download/ssd-win.7z{/if}"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
-                                                        .
-                                                        <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Windows/releases"><i class="material-icons icon-sm">cloud_download</i> 官方下载</a>
-                                                    </p>
-                                                    <p>
-                                                        使用教程：
-                                                        <a class="btn-dl" href="{if $config['use_this_doc'] === false}/user/tutorial{else}/doc/#/Windows/ShadowsocksD{/if}"><i class="material-icons icon-sm">turned_in_not</i> 点击查看</a>
-                                                    </p>
-													<p>
-                                                        使用方式：
-                                                        <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ssd']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
-                                                        .
-                                                        <a id="win_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#win_ssd","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
-                                                    </p>
-												<hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> SSR(R) - [ SS/SSR ]：</p>
+												<p><span class="icon icon-lg text-white">filter_2</span> SSR(R) - [ SS/SSR ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="{if $config["subscribe_client"]===true}{if $config["subscribe_client_url"]==''}/user/getPcClient{else}{$config["subscribe_client_url"]}/getClient/{$getClient}{/if}?type=ssr-win{else}/ssr-download/ssr-win.7z{/if}"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -507,7 +492,7 @@ table tr td:first-child {
                                                     </p>
 												<hr/>
 
-												<p><span class="icon icon-lg text-white">filter_4</span> SSTap - [ SS/SSR ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> SSTap - [ SS/SSR ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/SSTap.7z"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -522,7 +507,7 @@ table tr td:first-child {
                                                     </p>
 												<hr/>
 
-												<p><span class="icon icon-lg text-white">filter_5</span> V2RayN - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_4</span> V2RayN - [ SS/VMess ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="{if $config["subscribe_client"]===true}{if $config["subscribe_client_url"]==''}/user/getPcClient{else}{$config["subscribe_client_url"]}/getClient/{$getClient}{/if}?type=v2rayn-win{else}/ssr-download/v2rayn.zip{/if}"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -540,7 +525,7 @@ table tr td:first-child {
                                                         <a id="win_v2rayn" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=v2ray","#win_v2rayn","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_6</span> Clash for Windows - [ SS/VMess/Trojan ]：</p>
+												<p><span class="icon icon-lg text-white">filter_5</span> Clash for Windows - [ SS/VMess/Trojan ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/Clash-Windows.7z"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -558,7 +543,7 @@ table tr td:first-child {
                                                         <a class="btn-dl" href="clash://install-config?url={urlencode($subInfo['clash'])}"><i class="material-icons icon-sm">send</i> 配置一键导入</a>
                                                     </p>
                                             	<hr/>
-												<p><span class="icon icon-lg text-white">filter_7</span> ClashR for Windows - [ SS/SSR/VMess/Trojan ]：</p>
+												<p><span class="icon icon-lg text-white">filter_6</span> ClashR for Windows - [ SS/SSR/VMess ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="#"><i class="material-icons icon-sm">cloud_download</i> 暂无下载</a>
@@ -804,6 +789,8 @@ table tr td:first-child {
                                                         .
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['v2ray']}"><i class="material-icons icon-sm">send</i> 拷贝 V2Ray 订阅链接</a>
                                                         .
+                                                        <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['trojan']}"><i class="material-icons icon-sm">send</i> 拷贝 Trojan 订阅链接</a>
+                                                        .
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['shadowrocket']}"><i class="material-icons icon-sm">send</i> 拷贝该应用专属订阅链接</a>
                                                         .
                                                         <a class="btn-dl" onclick=AddSub("{$subInfo['shadowrocket']}","shadowrocket://add/sub://")><i class="material-icons icon-sm">send</i> 一键导入 Shadowrocket</a>
@@ -837,29 +824,7 @@ table tr td:first-child {
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ssa']}"><i class="material-icons icon-sm">send</i> 拷贝该应用专属订阅链接</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_2</span> SSD - [ SS ]：</p>
-													<p>
-                                                        应用下载：
-                                                        <a class="btn-dl" href="/ssr-download/ssd-android.apk"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
-                                                        .
-                                                        <a class="btn-dl" href="https://github.com/CGDF-Github/SSD-Android/releases"><i class="material-icons icon-sm">cloud_download</i> 官方下载</a>
-                                                    </p>
-													<p>
-                                                        插件下载：
-                                                        <a class="btn-dl" href="/ssr-download/ss-android-obfs.apk"><i class="material-icons icon-sm">cloud_download</i> 「必须」obfs 插件本站下载【高速】</a>
-                                                    </p>
-                                                    <p>
-                                                        使用教程：
-                                                        <a class="btn-dl" href="{if $config['use_this_doc'] === false}/user/tutorial{else}/doc/#/Android/ShadowsocksD{/if}"><i class="material-icons icon-sm">turned_in_not</i> 点击查看</a>
-                                                    </p>
-													<p>
-                                                        使用方式：
-                                                        <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ssd']}"><i class="material-icons icon-sm">send</i> 拷贝该应用专属订阅链接</a>
-                                                        .
-                                                        <a id="android_ssd" class="copy-config btn-dl" onclick=Copyconfig("/user/getUserAllURL?type=ssd","#android_ssd","")><i class="material-icons icon-sm">send</i> 拷贝全部节点 URL</a>
-                                                    </p>
-												<hr/>
-												<p><span class="icon icon-lg text-white">filter_3</span> SSR(R) - [ SSR ]：</p>
+												<p><span class="icon icon-lg text-white">filter_2</span> SSR(R) - [ SSR ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/ssr-android.apk"><i class="material-icons icon-sm">cloud_download</i> SSR 本站下载【高速】</a>
@@ -875,7 +840,7 @@ table tr td:first-child {
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ssr']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_4</span> V2RayNG - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_3</span> V2RayNG - [ SS/VMess ]：</p>
 													<p>
                                                         应用下载：
                                                         <a class="btn-dl" href="/ssr-download/v2rayng.apk"><i class="material-icons icon-sm">cloud_download</i> 本站下载【高速】</a>
@@ -891,7 +856,7 @@ table tr td:first-child {
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['v2ray']}"><i class="material-icons icon-sm">send</i> 拷贝订阅链接</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_5</span> Surfboard - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_4</span> Surfboard - [ SS/VMess ]：</p>
 												    <p>该客户端新版本支持 V2Ray 节点，如您遇到配置解析错误等情况，请尝试升级客户端.</p>
 													<p>
                                                         应用下载：
@@ -908,7 +873,7 @@ table tr td:first-child {
                                                         <a class="btn-dl" href="{$subInfo['surfboard']}"><i class="material-icons icon-sm">send</i> 配置文件下载</a>
                                                     </p>
 												<hr/>
-												<p><span class="icon icon-lg text-white">filter_6</span> Kitsunebi - [ SS/VMess ]：</p>
+												<p><span class="icon icon-lg text-white">filter_5</span> Kitsunebi - [ SS/VMess ]：</p>
 												    <p>该客户端专属订阅链接支持同时订阅 SS 和 V2Ray 节点.</p>
 													<p>
                                                         应用下载：
@@ -918,11 +883,25 @@ table tr td:first-child {
                                                         使用教程：
                                                         <a class="btn-dl" href="{if $config['use_this_doc'] === false}/user/tutorial{else}/doc/#/Android/Kitsunebi{/if}"><i class="material-icons icon-sm">turned_in_not</i> 点击查看</a>
                                                     </p>
+
 													<p>
                                                         使用方式：
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['ss']}"><i class="material-icons icon-sm">send</i> 拷贝 SS 订阅链接</a>
                                                         .
                                                         <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['kitsunebi']}"><i class="material-icons icon-sm">send</i> 拷贝该应用专属订阅链接</a>
+                                                    </p>
+                                                <hr/>
+                                                    <p><span class="icon icon-lg text-white">filter_6</span> Clash for Android - [ SS/VMess ]：</p>
+													<p>
+                                                        应用下载：
+                                                        <a class="btn-dl" href="https://play.google.com/store/apps/details?id=com.github.kr328.clash"><i class="material-icons icon-sm">cloud_download</i> Google Play 下载</a>
+                                                    </p>
+
+													<p>
+                                                        使用方式：
+                                                        <a class="copy-text btn-dl" data-clipboard-text="{$subInfo['clash']}"><i class="material-icons icon-sm">send</i> 拷贝 Clash 订阅链接</a>
+                                                        .
+                                                        <a class="btn-dl" href="clash://install-config?url={urlencode($subInfo['clash'])}"><i class="material-icons icon-sm">send</i> 配置一键导入</a>
                                                     </p>
                                             {if array_key_exists('Android',$config['userCenterClient'])}
                                                 {if count($config['userCenterClient']['Android']) != 0}

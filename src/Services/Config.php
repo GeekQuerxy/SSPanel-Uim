@@ -43,8 +43,10 @@ class Config
             'enable_donate'           => $_ENV['enable_donate'],
             'enable_telegram'         => $_ENV['enable_telegram'],
             'payment_system'          => $_ENV['payment_system'],
-            'enable_mylivechat'       => $_ENV['enable_mylivechat'],
+            'live_chat'               => $_ENV['live_chat'],
+            'crisp_id'                => $_ENV['crisp_id'],
             'mylivechat_id'           => $_ENV['mylivechat_id'],
+            'tawk_id'                 => $_ENV['tawk_id'],
             'enable_ticket'           => $_ENV['enable_ticket'],
             'enable_admin_contact'    => $_ENV['enable_admin_contact'],
             'admin_contact1'          => $_ENV['admin_contact1'],
@@ -82,6 +84,8 @@ class Config
             'userCenterClient'        => $_ENV['userCenterClient'],
 
             'old_index_DESC'          => $_ENV['old_index_DESC'],
+
+            'sentry_dsn'              => !empty($_ENV['sentry_dsn']) ? $_ENV['sentry_dsn'] : null,
         ];
     }
 

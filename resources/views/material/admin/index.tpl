@@ -14,6 +14,18 @@
                         <div class="card-main">
                             <div class="card-inner">
                                 <p>下面是系统运行情况简报。</p>
+                                <p>
+                                    付费用户：{$user->paidUserCount()}<br/>
+                                    总共用户：{$user->count()}<br/>
+                                    总转换率：{round($user->paidUserCount()/$user->count()*100,2)}%
+                                </p>
+                                <p>
+                                    今日流水：￥{$user->calIncome("today")}<br/>
+                                    昨日流水：￥{$user->calIncome("yesterday")}<br/>
+                                    这月流水：￥{$user->calIncome("this month")}<br/>
+                                    上月流水：￥{$user->calIncome("last month")}<br/>
+                                    总共流水：￥{$user->calIncome("total")}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -31,7 +43,7 @@
 
                                     <div id="check_chart" style="height: 300px; width: 100%;"></div>
 
-                                    <script src="//cdn.jsdelivr.net/gh/SuicidalCat/canvasjs.js@v2.3.1/canvasjs.min.js"></script>
+                                    <script src="//cdn.jsdelivr.net/gh/M1Screw/canvasjs.js@v3.1/canvasjs.min.js"></script>
                                     <script>
                                         var chart = new CanvasJS.Chart("check_chart",
                                                 {
@@ -115,7 +127,7 @@
 
                                     <div id="alive_chart" style="height: 300px; width: 100%;"></div>
 
-                                    <script src="//cdn.jsdelivr.net/gh/YihanH/canvasjs.js@v2.2/canvasjs.min.js"></script>
+                                    <script src="//cdn.jsdelivr.net/gh/M1Screw/canvasjs.js@v3.1/canvasjs.min.js"></script>
                                     <script type="text/javascript">
                                         var chart = new CanvasJS.Chart("alive_chart",
                                                 {
@@ -191,7 +203,7 @@
 
                                     <div id="node_chart" style="height: 300px; width: 100%;"></div>
 
-                                    <script src="//cdn.jsdelivr.net/gh/YihanH/canvasjs.js@v2.2/canvasjs.min.js"></script>
+                                    <script src="//cdn.jsdelivr.net/gh/M1Screw/canvasjs.js@v3.1/canvasjs.min.js"></script>
                                     <script type="text/javascript">
                                         var chart = new CanvasJS.Chart("node_chart",
                                                 {
@@ -248,7 +260,7 @@
 
                                     <div id="traffic_chart" style="height: 300px; width: 100%;"></div>
 
-                                    <script src="//cdn.jsdelivr.net/gh/YihanH/canvasjs.js@v2.2/canvasjs.min.js"></script>
+                                    <script src="//cdn.jsdelivr.net/gh/M1Screw/canvasjs.js@v3.1/canvasjs.min.js"></script>
                                     <script type="text/javascript">
                                         var chart = new CanvasJS.Chart("traffic_chart",
                                                 {
