@@ -983,7 +983,7 @@ class UserController extends BaseController
 
             $use_limit = $coupon->onetime;
             if ($use_limit > 0) {
-                $use_count = Bought::where('userid', $user->id)->where('coupon', $coupon->code)->count();
+                $use_count = Bought::where('userid', $this->user->id)->where('coupon', $coupon->code)->count();
                 if ($use_count >= $use_limit) {
                     $res['ret'] = 0;
                     $res['msg'] = '优惠码次数已用完';
