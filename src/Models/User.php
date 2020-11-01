@@ -872,7 +872,7 @@ class User extends Model
         if($is_queue){
             $new_emailqueue = new EmailQueue;
             $new_emailqueue->to_email = $this->email;
-            $new_emailqueue -> subject = $subject;
+            $new_emailqueue->subject = $subject;
             $new_emailqueue->template = $template;
             $new_emailqueue->time = time();
             $new_emailqueue->array = json_encode($ary);
