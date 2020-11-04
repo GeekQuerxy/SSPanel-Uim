@@ -62,7 +62,7 @@ class VueController extends BaseController
         }
         $themes = Tools::getDir(BASE_PATH . '/resources/views');
 
-        $res['globalConfig'] = array(
+        $res['globalConfig'] = [
             'geetest_html'            => $GtSdk,
             'login_token'             => $login_token,
             'login_number'            => $login_number,
@@ -90,7 +90,7 @@ class VueController extends BaseController
             'subscribeLog_show'       => $_ENV['subscribeLog_show'],
             'themes'                  => $themes,
             'use_new_telegram_bot'    => $_ENV['use_new_telegram_bot']
-        );
+        ];
 
         $res['ret'] = 1;
 
@@ -123,16 +123,14 @@ class VueController extends BaseController
             return $response->withJson($res);
         }
 
-        $pre_user = URL::cloneUser($user);
-        $user->ssr_url_all = URL::get_NewAllUrl($pre_user, ['type' => 'ssr']);
-        $user->ssr_url_all_mu = URL::get_NewAllUrl($pre_user, ['type' => 'ssr', 'is_mu' => 1]);
-        $user->ss_url_all = URL::get_NewAllUrl($pre_user, ['type' => 'ss']);
-        $ssinfo = URL::getSSConnectInfo($pre_user);
-        $user->vmess_url_all = URL::getAllVMessUrl($user);
+        $pre_user              = URL::cloneUser($user);
+        $user->ssr_url_all     = URL::get_NewAllUrl($pre_user, ['type' => 'ssr']);
+        $user->ssr_url_all_mu  = URL::get_NewAllUrl($pre_user, ['type' => 'ssr', 'is_mu' => 1]);
+        $user->ss_url_all      = URL::get_NewAllUrl($pre_user, ['type' => 'ss']);
+        $user->vmess_url_all   = URL::getAllVMessUrl($user);
         $user->isAbleToCheckin = $user->isAbleToCheckin();
-        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
-        $GtSdk = null;
-        $recaptcha_sitekey = null;
+        $GtSdk                 = null;
+        $recaptcha_sitekey     = null;
         if ($_ENV['captcha_provider'] != '') {
             switch ($_ENV['captcha_provider']) {
                 case 'recaptcha':
@@ -148,49 +146,49 @@ class VueController extends BaseController
         if (Cookie::get('old_uid') && Cookie::get('old_email') && Cookie::get('old_key') && Cookie::get('old_ip') && Cookie::get('old_expire_in') && Cookie::get('old_local')) {
             $can_backtoadmin = 1;
         }
-        $Ann = Ann::orderBy('date', 'desc')->first();
+        $Ann               = Ann::orderBy('date', 'desc')->first();
         $display_ios_class = $_ENV['display_ios_class'];
         $display_ios_topup = $_ENV['display_ios_topup'];
-        $ios_account = null;
-        $ios_password = null;
-        $show_ios_account = false;
+        $ios_account       = null;
+        $ios_password      = null;
+        $show_ios_account  = false;
         if ($user->class >= $display_ios_class && $user->get_top_up() >= $display_ios_topup || $user->is_admin) {
-            $ios_account = $_ENV['ios_account'];
-            $ios_password = $_ENV['ios_password'];
+            $ios_account      = $_ENV['ios_account'];
+            $ios_password     = $_ENV['ios_password'];
             $show_ios_account = true;
         }
-        $mergeSub = $_ENV['mergeSub'];
-        $subUrl = $_ENV['subUrl'];
-        $baseUrl = $_ENV['baseUrl'];
+        $mergeSub                = $_ENV['mergeSub'];
+        $subUrl                  = $_ENV['subUrl'];
+        $baseUrl                 = $_ENV['baseUrl'];
         $user['online_ip_count'] = $user->online_ip_count();
-        $bind_token = TelegramSessionManager::add_bind_session($this->user);
-        $subInfo = LinkController::getSubinfo($this->user, 0);
-        $url_subinfo = array();
+        $bind_token              = TelegramSessionManager::add_bind_session($this->user);
+        $subInfo                 = LinkController::getSubinfo($this->user, 0);
+        $url_subinfo             = [];
         foreach ($subInfo as $key => $value) {
             $url_subinfo[$key] = urlencode($value);
         }
 
-        $res['info'] = array(
-            'user' => $user,
-            'ssrSubToken' => $ssr_sub_token,
-            'displayIosClass' => $display_ios_class,
+        $res['info'] = [
+            'user'              => $user,
+            'ssrSubToken'       => $user->getSubscribeToken(),
+            'displayIosClass'   => $display_ios_class,
             'display_ios_topup' => $display_ios_topup,
-            'show_ios_account' => $show_ios_account,
-            'iosAccount' => $ios_account,
-            'iosPassword' => $ios_password,
-            'mergeSub' => $mergeSub,
-            'subUrl' => $subUrl,
-            'subInfo' => $subInfo,
-            'url_subinfo' => $url_subinfo,
-            'baseUrl' => $baseUrl,
-            'can_backtoadmin' => $can_backtoadmin,
-            'ann' => $Ann,
-            'recaptchaSitekey' => $recaptcha_sitekey,
-            'GtSdk' => $GtSdk,
-            'GaUrl' => $user->getGAurl(),
-            'bind_token' => $bind_token,
-            'gravatar' => $user->gravatar
-        );
+            'show_ios_account'  => $show_ios_account,
+            'iosAccount'        => $ios_account,
+            'iosPassword'       => $ios_password,
+            'mergeSub'          => $mergeSub,
+            'subUrl'            => $subUrl,
+            'subInfo'           => $subInfo,
+            'url_subinfo'       => $url_subinfo,
+            'baseUrl'           => $baseUrl,
+            'can_backtoadmin'   => $can_backtoadmin,
+            'ann'               => $Ann,
+            'recaptchaSitekey'  => $recaptcha_sitekey,
+            'GtSdk'             => $GtSdk,
+            'GaUrl'             => $user->getGAurl(),
+            'bind_token'        => $bind_token,
+            'gravatar'          => $user->gravatar
+        ];
 
         $res['ret'] = 1;
 
@@ -204,11 +202,9 @@ class VueController extends BaseController
      */
     public function telegramReset($request, $response, $args)
     {
-        $user = $this->user;
-        $user->telegram_id = 0;
-        $user->save();
-        $res['ret'] = 1;
-        $res['msg'] = '解绑成功';
+        $result = $this->user->TelegramReset();
+        $res['ret'] = $result['ok'] ? 1 : 0;
+        $res['msg'] = $result['msg'];
         return $response->withJson($res);
     }
 
@@ -243,7 +239,7 @@ class VueController extends BaseController
             $payback['user_name'] = $payback->user() != null ? $payback->user()->user_name : '已注销';
         };
 
-        $res['inviteInfo'] = array(
+        $res['inviteInfo'] = [
             'code'              => $code,
             'paybacks'          => $paybacks,
             'paybacks_sum'      => $paybacks_sum,
@@ -253,7 +249,7 @@ class VueController extends BaseController
             'invite_gift'       => Config::getconfig('Users.int.invite_gift'),
             'invite_get_money'  => Config::getconfig('Register.int.defaultInvite_get_money'),
             'code_payback'      => Config::getconfig('Users.int.code_payback'),
-        );
+        ];
 
         $res['ret'] = 1;
 
@@ -276,9 +272,9 @@ class VueController extends BaseController
 
         $shops = Shop::where('status', 1)->orderBy('name')->get();
 
-        $res['arr'] = array(
+        $res['arr'] = [
             'shops' => $shops,
-        );
+        ];
         $res['ret'] = 1;
 
         return $response->withJson($res);
@@ -298,15 +294,15 @@ class VueController extends BaseController
             return $response->withJson($res);
         }
 
-        $res['resourse'] = array(
-            'money' => $user->money,
-            'class' => $user->class,
-            'class_expire' => $user->class_expire,
-            'expire_in' => $user->expire_in,
+        $res['resourse'] = [
+            'money'           => $user->money,
+            'class'           => $user->class,
+            'class_expire'    => $user->class_expire,
+            'expire_in'       => $user->expire_in,
             'online_ip_count' => $user->online_ip_count(),
             'node_speedlimit' => $user->node_speedlimit,
-            'node_connector' => $user->node_connector,
-        );
+            'node_connector'  => $user->node_connector,
+        ];
         $res['ret'] = 1;
 
         return $response->withJson($res);
@@ -327,11 +323,10 @@ class VueController extends BaseController
         }
 
         $user->clean_link();
-        $ssr_sub_token = LinkController::GenerateSSRSubCode($this->user->id, 0);
 
-        $res['arr'] = array(
-            'ssr_sub_token' => $ssr_sub_token,
-        );
+        $res['arr'] = [
+            'ssr_sub_token' => $user->getSubscribeToken(),
+        ];
 
         $res['ret'] = 1;
 
@@ -359,9 +354,9 @@ class VueController extends BaseController
             $code = InviteCode::where('user_id', $this->user->id)->first();
         }
 
-        $res['arr'] = array(
+        $res['arr'] = [
             'code' => $code,
-        );
+        ];
 
         $res['ret'] = 1;
 
@@ -382,11 +377,11 @@ class VueController extends BaseController
             return $response->withJson($res);
         }
 
-        $res['arr'] = array(
+        $res['arr'] = [
             'todayUsedTraffic' => $user->TodayusedTraffic(),
-            'lastUsedTraffic' => $user->LastusedTraffic(),
-            'unUsedTraffic' => $user->unusedTraffic(),
-        );
+            'lastUsedTraffic'  => $user->LastusedTraffic(),
+            'unUsedTraffic'    => $user->unusedTraffic(),
+        ];
 
         $res['ret'] = 1;
 
@@ -462,11 +457,11 @@ class VueController extends BaseController
         $nodes = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
         $relay_rules = Relay::where('user_id', $this->user->id)->orwhere('user_id', 0)->orderBy('id', 'asc')->get();
         if (!Tools::is_protocol_relay($user)) {
-            $relay_rules = array();
+            $relay_rules = [];
         }
 
-        $array_nodes = array();
-        $nodes_muport = array();
+        $array_nodes  = [];
+        $nodes_muport = [];
 
         foreach ($nodes as $node) {
             if ($node->node_group != $user->node_group && $node->node_group != 0) {
@@ -475,10 +470,10 @@ class VueController extends BaseController
             if ($node->sort == 9) {
                 $mu_user = User::where('port', '=', $node->server)->first();
                 $mu_user->obfs_param = $this->user->getMuMd5();
-                $nodes_muport[] = array('server' => $node, 'user' => $mu_user);
+                $nodes_muport[] = ['server' => $node, 'user' => $mu_user];
                 continue;
             }
-            $array_node = array();
+            $array_node = [];
 
             $array_node['id'] = $node->id;
             $array_node['class'] = $node->node_class;
@@ -499,7 +494,7 @@ class VueController extends BaseController
 
             $array_node['raw_node'] = $node;
             $regex = $_ENV['flag_regex'];
-            $matches = array();
+            $matches = [];
             preg_match($regex, $node->name, $matches);
             if (isset($matches[0])) {
                 $array_node['flag'] = $matches[0] . '.png';
@@ -516,7 +511,7 @@ class VueController extends BaseController
                 $array_node['online'] = -1;
             }
 
-            if (in_array($node->sort, array(0, 7, 8, 10, 11, 12, 13))) {
+            if (in_array($node->sort, [0, 7, 8, 10, 11, 12, 13])) {
                 $array_node['online_user'] = $node->getOnlineUserCount();
             } else {
                 $array_node['online_user'] = -1;
@@ -545,13 +540,13 @@ class VueController extends BaseController
             $array_nodes[] = $array_node;
         }
 
-        $res['nodeinfo'] = array(
-            'nodes' => $array_nodes,
-            'nodes_muport' => $nodes_muport,
-            'relay_rules' => $relay_rules,
-            'user' => $user,
-            'tools' => new Tools(),
-        );
+        $res['nodeinfo'] = [
+            'nodes'           => $array_nodes,
+            'nodes_muport'    => $nodes_muport,
+            'relay_rules'     => $relay_rules,
+            'user'            => $user,
+            'tools'           => new Tools(),
+        ];
         $res['ret'] = 1;
 
         return $response->withJson($res);

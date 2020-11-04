@@ -86,6 +86,11 @@ class Config
             'old_index_DESC'          => $_ENV['old_index_DESC'],
 
             'sentry_dsn'              => !empty($_ENV['sentry_dsn']) ? $_ENV['sentry_dsn'] : null,
+
+            'display_ios_class'       => $_ENV['display_ios_class'],
+            'display_ios_topup'       => $_ENV['display_ios_topup'],
+            'ios_account'             => $_ENV['ios_account'],
+            'ios_password'            => $_ENV['ios_password'],
         ];
     }
 

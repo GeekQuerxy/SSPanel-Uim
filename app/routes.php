@@ -85,7 +85,6 @@ return function (SlimApp $app) {
         $this->get('/logout',                   App\Controllers\UserController::class . ':logout');
         $this->get('/backtoadmin',              App\Controllers\UserController::class . ':backtoadmin');
         $this->get('/code',                     App\Controllers\UserController::class . ':code');
-        $this->get('/alipay',                   App\Controllers\UserController::class . ':alipay');
 
         $this->get('/code_check',               App\Controllers\UserController::class . ':code_check');
         $this->post('/code',                    App\Controllers\UserController::class . ':codepost');

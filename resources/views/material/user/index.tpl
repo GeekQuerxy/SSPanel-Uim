@@ -669,18 +669,18 @@ table tr td:first-child {
 											</div>
 
 											<div class="tab-pane fade" id="sub_center_ios">
-											{if $display_ios_class>=0}
-												{if $user->class>=$display_ios_class && $user->get_top_up()>=$display_ios_topup}
+											{if $config['display_ios_class'] >=0}
+												{if $user->class >= $config['display_ios_class'] && $user->get_top_up() >= $config['display_ios_topup']}
 												<div><span class="icon icon-lg text-white">account_box</span> 本站iOS账户：</div>
 												<div class="float-clear">
-													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_account}" readonly="true">
-													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_account}">点击复制</button>
+													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$config['ios_account']}" readonly="true">
+													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$config['ios_account']}">点击复制</button>
                                                     <br>
 												</div>
 												<div><span class="icon icon-lg text-white">lock</span> 本站iOS密码：</div>
 												<div class="float-clear">
-													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$ios_password}" readonly="true">
-													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$ios_password}">点击复制</button>
+													<input type="text" class="input form-control form-control-monospace cust-link col-xx-12 col-sm-8 col-lg-7" name="input1" readonly value="{$config['ios_password']}" readonly="true">
+													<button class="copy-text btn btn-subscription col-xx-12 col-sm-3 col-lg-2" type="button" data-clipboard-text="{$config['ios_password']}">点击复制</button>
                                                     <br>
 												</div>
 												<p><span class="icon icon-lg text-white">error</span><strong>禁止将账户分享给他人！</strong></p>

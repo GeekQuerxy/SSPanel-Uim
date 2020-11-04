@@ -484,10 +484,10 @@ class User extends Model
                 $number = Code::whereDate('usedatetime', '=', date('Y-m-d'))->sum('number');
                 break;
             case "this month":
-                $number = Code::whereYear('usedatetime','=',date('Y'))->whereMonth('usedatetime', '=', date('m'))->sum('number');
+                $number = Code::whereYear('usedatetime', '=', date('Y'))->whereMonth('usedatetime', '=', date('m'))->sum('number');
                 break;
             case "last month":
-                $number = Code::whereYear('usedatetime','=',date('Y'))->whereMonth('usedatetime', '=', date('m', strtotime('last month')))->sum('number');
+                $number = Code::whereYear('usedatetime', '=', date('Y'))->whereMonth('usedatetime', '=', date('m', strtotime('last month')))->sum('number');
                 break;
             default:
                 $number = Code::sum('number');
@@ -866,10 +866,10 @@ class User extends Model
      * @param array  $ary
      * @param array  $files
      */
-    public function sendMail(string $subject, string $template, array $ary = [], array $files = [],$is_queue = false): bool
+    public function sendMail(string $subject, string $template, array $ary = [], array $files = [], $is_queue = false): bool
     {
         $result = false;
-        if($is_queue){
+        if ($is_queue) {
             $new_emailqueue = new EmailQueue;
             $new_emailqueue->to_email = $this->email;
             $new_emailqueue->subject = $subject;
@@ -982,6 +982,37 @@ class User extends Model
      */
     public function getSubscribeLink()
     {
-        return $_ENV['subUrl'] . $this->getSubscribeToken();;
+        return $_ENV['subUrl'] . $this->getSubscribeToken();
+    }
+
+    public function getSubinfo()
+    {
+        return LinkController::getSubinfo($this, 0);
+    }
+
+    public function getClientToken()
+    {
+        if ($_ENV['subscribe_client_url'] != '') {
+            $getClient = new Token();
+            for ($i = 0; $i < 10; $i++) {
+                $token = $this->id . Tools::genRandomChar(16);
+                $Elink = Token::where('token', '=', $token)->first();
+                if ($Elink == null) {
+                    $getClient->token = $token;
+                    break;
+                }
+            }
+            if ($Elink != null) {
+                $token = '';
+            } else {
+                $getClient->user_id     = $this->id;
+                $getClient->create_time = time();
+                $getClient->expire_time = time() + 10 * 60;
+                $getClient->save();
+            }
+        } else {
+            $token = '';
+        }
+        return $token;
     }
 }

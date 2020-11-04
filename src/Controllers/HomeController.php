@@ -166,40 +166,6 @@ class HomeController extends BaseController
      * @param Response  $response
      * @param array     $args
      */
-    public function getOrderList($request, $response, $args): ResponseInterface
-    {
-        $key = $request->getParam('key');
-        if (!$key || $key != $_ENV['key']) {
-            $res['ret'] = 0;
-            $res['msg'] = '错误';
-            return $response->withJson($res);
-        }
-        return $response->withJson(['data' => AliPay::getList()]);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function setOrder($request, $response, $args): ResponseInterface
-    {
-        $key = $request->getParam('key');
-        $sn = $request->getParam('sn');
-        $url = $request->getParam('url');
-        if (!$key || $key != $_ENV['key']) {
-            $res['ret'] = 0;
-            $res['msg'] = '错误';
-            return $response->withJson($res);
-        }
-        return $response->withJson(['res' => AliPay::setOrder($sn, $url)]);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
     public function getDocCenter($request, $response, $args): ResponseInterface
     {
         $user = Auth::getUser();

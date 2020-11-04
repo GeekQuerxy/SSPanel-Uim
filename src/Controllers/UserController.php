@@ -54,8 +54,6 @@ class UserController extends BaseController
      */
     public function index($request, $response, $args)
     {
-        $ssr_sub_token = $this->user->getSubscribeToken();
-
         $GtSdk = null;
         $recaptcha_sitekey = null;
         if ($_ENV['enable_checkin_captcha'] == true) {
@@ -72,38 +70,13 @@ class UserController extends BaseController
 
         $Ann = Ann::orderBy('date', 'desc')->first();
 
-        if ($_ENV['subscribe_client_url'] != '') {
-            $getClient = new Token();
-            for ($i = 0; $i < 10; $i++) {
-                $token = $this->user->id . Tools::genRandomChar(16);
-                $Elink = Token::where('token', '=', $token)->first();
-                if ($Elink == null) {
-                    $getClient->token = $token;
-                    break;
-                }
-            }
-            $getClient->user_id     = $this->user->id;
-            $getClient->create_time = time();
-            $getClient->expire_time = time() + 10 * 60;
-            $getClient->save();
-        } else {
-            $token = '';
-        }
-
         return $this->view()
-            ->assign('ssr_sub_token', $ssr_sub_token)
-            ->assign('display_ios_class', $_ENV['display_ios_class'])
-            ->assign('display_ios_topup', $_ENV['display_ios_topup'])
-            ->assign('ios_account', $_ENV['ios_account'])
-            ->assign('ios_password', $_ENV['ios_password'])
+            ->registerClass('URL', URL::class)
             ->assign('ann', $Ann)
             ->assign('geetest_html', $GtSdk)
-            ->assign('mergeSub', $_ENV['mergeSub'])
-            ->assign('subUrl', $_ENV['subUrl'])
-            ->registerClass('URL', URL::class)
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-            ->assign('subInfo', LinkController::getSubinfo($this->user, 0))
-            ->assign('getClient', $token)
+            ->assign('subInfo', $this->user->getSubinfo())
+            ->assign('getClient', $this->user->getClientToken())
             ->display('user/index.tpl');
     }
 
@@ -164,32 +137,6 @@ class UserController extends BaseController
         return $this->view()->assign('codes', $codes)->assign('total_in', Code::where('isused', 1)->where('type', -1)->sum('number'))->assign('total_out', Code::where('isused', 1)->where('type', -2)->sum('number'))->display('user/donate.tpl');
     }
 
-    public function isHTTPS()
-    {
-        define('HTTPS', false);
-        if (defined('HTTPS') && HTTPS) {
-            return true;
-        }
-        if (!isset($_SERVER)) {
-            return false;
-        }
-        if (!isset($_SERVER['HTTPS'])) {
-            return false;
-        }
-        if ($_SERVER['HTTPS'] === 1) {  //Apache
-            return true;
-        }
-
-        if ($_SERVER['HTTPS'] === 'on') { //IIS
-            return true;
-        }
-
-        if ($_SERVER['SERVER_PORT'] == 443) { //其他
-            return true;
-        }
-        return false;
-    }
-
     /**
      * @param Request   $request
      * @param Response  $response
@@ -213,82 +160,9 @@ class UserController extends BaseController
      * @param Response  $response
      * @param array     $args
      */
-    public function f2fpayget($request, $response, $args)
-    {
-        $time = $request->getQueryParams()['time'];
-        $res['ret'] = 1;
-        return $response->withJson($res);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function f2fpay($request, $response, $args)
-    {
-        $amount = $request->getParam('amount');
-        if ($amount == '') {
-            $res['ret'] = 0;
-            $res['msg'] = '订单金额错误：' . $amount;
-            return $response->withJson($res);
-        }
-        $user = $this->user;
-
-        //生成二维码
-        $qrPayResult = Pay::alipay_get_qrcode($user, $amount, $qrPay);
-        //  根据状态值进行业务处理
-        switch ($qrPayResult->getTradeStatus()) {
-            case 'SUCCESS':
-                $aliresponse = $qrPayResult->getResponse();
-                $res['ret'] = 1;
-                $res['msg'] = '二维码生成成功';
-                $res['amount'] = $amount;
-                $res['qrcode'] = $qrPay->create_erweima($aliresponse->qr_code);
-
-                break;
-            case 'FAILED':
-                $res['ret'] = 0;
-                $res['msg'] = '支付宝创建订单二维码失败! 请使用其他方式付款。';
-
-                break;
-            case 'UNKNOWN':
-                $res['ret'] = 0;
-                $res['msg'] = '系统异常，状态未知! 请使用其他方式付款。';
-
-                break;
-            default:
-                $res['ret'] = 0;
-                $res['msg'] = '创建订单二维码返回异常! 请使用其他方式付款。';
-
-                break;
-        }
-
-        return $response->withJson($res);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
-    public function alipay($request, $response, $args)
-    {
-        $amount = $request->getQueryParams()['amount'];
-        Pay::getGen($this->user, $amount);
-    }
-
-    /**
-     * @param Request   $request
-     * @param Response  $response
-     * @param array     $args
-     */
     public function codepost($request, $response, $args)
     {
-        $code = $request->getParam('code');
-        $code = trim($code);
-        $user = $this->user;
-
+        $code = trim($request->getParam('code'));
         if ($code == '') {
             $res['ret'] = 0;
             $res['msg'] = '非法输入';
@@ -302,9 +176,10 @@ class UserController extends BaseController
             return $response->withJson($res);
         }
 
-        $codeq->isused = 1;
+        $user               = $this->user;
+        $codeq->isused      = 1;
         $codeq->usedatetime = date('Y-m-d H:i:s');
-        $codeq->userid = $user->id;
+        $codeq->userid      = $user->id;
         $codeq->save();
 
         if ($codeq->type == -1) {
@@ -375,7 +250,6 @@ class UserController extends BaseController
         $code = $request->getParam('code');
         $user = $this->user;
 
-
         if ($code == '') {
             $res['ret'] = 0;
             $res['msg'] = '二维码不能为空';
@@ -389,7 +263,6 @@ class UserController extends BaseController
             $res['msg'] = '测试错误';
             return $response->withJson($res);
         }
-
 
         $res['ret'] = 1;
         $res['msg'] = '测试成功';
@@ -414,7 +287,6 @@ class UserController extends BaseController
 
         $user->ga_enable = $enable;
         $user->save();
-
 
         $res['ret'] = 1;
         $res['msg'] = '设置成功';
@@ -622,8 +494,7 @@ class UserController extends BaseController
     public function buyInvite($request, $response, $args)
     {
         $price = Config::getconfig('Register.int.invite_price');
-        $num   = $request->getParam('num');
-        $num   = trim($num);
+        $num   = trim($request->getParam('num'));
 
         if (!Tools::isInt($num) || $price < 0 || $num <= 0) {
             $res['ret'] = 0;
@@ -1454,8 +1325,6 @@ class UserController extends BaseController
     public function handleKill($request, $response, $args)
     {
         $user = Auth::getUser();
-
-        $email = $user->email;
 
         $passwd = $request->getParam('passwd');
         // check passwd
