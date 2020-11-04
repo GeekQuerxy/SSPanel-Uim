@@ -5,6 +5,8 @@ namespace App\Controllers\User;
 use App\Controllers\UserController;
 use App\Models\{
     Node,
+    NodeInfoLog,
+    NodeOnlineLog,
     User,
     Relay
 };
@@ -12,7 +14,6 @@ use App\Utils\{
     URL,
     Tools,
     Radius,
-    DatatablesHelper
 };
 use Slim\Http\{
     Request,
@@ -32,30 +33,39 @@ class NodeController extends UserController
      */
     public function node($request, $response, $args): ResponseInterface
     {
-        $user        = $this->user;
-        $nodes       = Node::where('type', 1)->orderBy('node_class')->orderBy('name')->get();
-        $relay_rules = Relay::where('user_id', $this->user->id)->orwhere('user_id', 0)->orderBy('id', 'asc')->get();
+        $user  = $this->user;
+        $nodes = Node::where('type', 1)
+            ->orderBy('node_class')
+            ->orderBy('name')
+            ->get();
 
+        // 判断用户的协议可否中转
         if (!Tools::is_protocol_relay($user)) {
             $relay_rules = [];
+        } else {
+            $relay_rules = Relay::where('user_id', $user->id)
+                ->orwhere('user_id', 0)
+                ->orderBy('id', 'asc')
+                ->get();
         }
 
-        $db = new DatatablesHelper();
-        $infoLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_info` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
-        $onlineLogs = $db->query('SELECT * FROM ( SELECT * FROM `ss_node_online_log` WHERE log_time > ' . (time() - 300) . ' ORDER BY id DESC LIMIT 999999999999 ) t GROUP BY node_id ORDER BY id DESC');
-
-        $array_nodes = [];
+        $array_nodes  = [];
         $nodes_muport = [];
-
         foreach ($nodes as $node) {
-            if ($user->is_admin == 0 && $node->node_group != $user->node_group && $node->node_group != 0) {
+            if (!$user->is_admin && $node->node_group != $user->node_group && $node->node_group != 0) {
+                // 如果用户不是管理员、并且用户的分组不等于节点的分组、并且节点的分组不等于 0
                 continue;
             }
 
             if ($node->sort == 9) {
-                $mu_user             = User::where('port', '=', $node->server)->first();
-                $mu_user->obfs_param = $this->user->getMuMd5();
-                $nodes_muport[]      = ['server' => $node, 'user' => $mu_user];
+                $mu_user = User::where('port', '=', $node->server)->first();
+                if ($mu_user != null) {
+                    $mu_user->obfs_param = $user->getMuMd5();
+                    $nodes_muport[]      = [
+                        'server' => $node,
+                        'user'   => $mu_user
+                    ];
+                }
                 continue;
             }
 
@@ -76,7 +86,8 @@ class NodeController extends UserController
                 $array_node['server'] = $node->getServer();
             }
 
-            $regex = $_ENV['flag_regex'];
+            // 匹配节点国旗
+            $regex   = $_ENV['flag_regex'];
             $matches = [];
             preg_match($regex, $node->name, $matches);
             if (isset($matches[0])) {
@@ -85,40 +96,47 @@ class NodeController extends UserController
                 $array_node['flag'] = 'unknown.png';
             }
 
-            $array_node['online_user'] = 0;
-
-            foreach ($onlineLogs as $log) {
-                if ($log['node_id'] != $node->id) {
-                    continue;
-                }
-                if (in_array($node->sort, array(0, 7, 8, 10, 11, 12, 13, 14))) {
-                    $array_node['online_user'] = $log['online_user'];
-                } else {
-                    $array_node['online_user'] = -1;
-                }
-                break;
+            // 节点在线用户数
+            $array_node['online_user'] = -1;
+            if (in_array($node->sort, [0, 7, 8, 10, 11, 12, 13, 14])) {
+                $onlineLog = NodeOnlineLog::where('node_id', $node->id)
+                    ->where('log_time', '>', time() - 300)
+                    ->orderBy('id', 'desc')
+                    ->first();
+                $array_node['online_user'] = $onlineLog != null ? $onlineLog->online_user : 0;
             }
 
-            // check node status
+            // 节点在线状态
             // 0: new node; -1: offline; 1: online
             $node_heartbeat = $node->node_heartbeat + 300;
-            $array_node['online'] = -1;
-            if (!in_array($node->sort, array(0, 7, 8, 10, 11, 12, 13, 14)) || $node_heartbeat == 300) {
-                $array_node['online'] = 0;
-            } elseif ($node_heartbeat > time()) {
-                $array_node['online'] = 1;
-            }
-
-            $array_node['latest_load'] = -1;
-            foreach ($infoLogs as $log) {
-                if ($log['node_id'] == $node->id) {
-                    $array_node['latest_load'] = (explode(' ', $log['load']))[0] * 100;
-                    break;
+            if (in_array($node->sort, [0, 7, 8, 10, 11, 12, 13, 14])) {
+                if ($node_heartbeat > time()) {
+                    $array_node['online'] = 1;
                 }
+                if ($node_heartbeat < time()) {
+                    $array_node['online'] = -1;
+                }
+                if ($node_heartbeat == 300) {
+                    $array_node['online'] = 0;
+                }
+            } else {
+                $array_node['online'] = 0;
             }
 
-            $array_node['traffic_used'] = (int) Tools::flowToGB($node->node_bandwidth);
+            // 节点负载
+            $infoLog = NodeInfoLog::where('node_id', $node->id)
+                ->where('log_time', '>', time() - 300)
+                ->orderBy('id', 'desc')
+                ->first();
+            $array_node['latest_load'] = $infoLog != null ? explode(' ', $infoLog->load)[0] * 100 : -1;
+
+            // 节点已用流量
+            $array_node['traffic_used']  = (int) Tools::flowToGB($node->node_bandwidth);
+
+            // 节点总流量
             $array_node['traffic_limit'] = (int) Tools::flowToGB($node->node_bandwidth_limit);
+
+            // 节点速率
             if ($node->node_speedlimit == 0.0) {
                 $array_node['bandwidth'] = 0;
             } elseif ($node->node_speedlimit >= 1024.00) {
@@ -127,7 +145,9 @@ class NodeController extends UserController
                 $array_node['bandwidth'] = $node->node_speedlimit . 'Mbps';
             }
 
+            // 节点流量倍率
             $array_node['traffic_rate'] = $node->traffic_rate;
+            // 节点状态
             $array_node['status']       = $node->status;
 
             $array_nodes[] = $array_node;
@@ -180,48 +200,71 @@ class NodeController extends UserController
             return null;
         }
 
+        $isAvailable = function ($user, $node) {
+            return $user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0);
+        };
+
         switch ($node->sort) {
             case 0:
-                if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
-                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass('URL', URL::class)->display('user/nodeinfo.tpl');
+            case 10:
+            case 13:
+                if (
+                    ($isAvailable($user, $node) || $user->is_admin)
+                    &&
+                    ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)
+                ) {
+                    return $this->view()
+                        ->assign('node', $node)
+                        ->assign('user', $user)
+                        ->assign('mu', $mu)
+                        ->assign('relay_rule_id', $relay_rule_id)
+                        ->registerClass('URL', URL::class)
+                        ->display('user/nodeinfo.tpl');
                 }
                 break;
             case 1:
-                if ($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) {
+                if ($isAvailable($user, $node)) {
                     $email = $this->user->email;
                     $email = Radius::GetUserName($email);
-                    $json_show = 'VPN 信息<br>地址：' . $node->server . '<br>' . '用户名：' . $email . '<br>密码：' . $this->user->passwd . '<br>支持方式：' . $node->method . '<br>备注：' . $node->info;
-
-                    return $this->view()->assign('json_show', $json_show)->display('user/nodeinfovpn.tpl');
+                    $json_show = 'VPN 信息'
+                        . '<br>地址：' . $node->server
+                        . '<br>用户名：' . $email
+                        . '<br>密码：' . $this->user->passwd
+                        . '<br>支持方式：' . $node->method
+                        . '<br>备注：' . $node->info;
+                    return $this->view()
+                        ->assign('json_show', $json_show)
+                        ->display('user/nodeinfovpn.tpl');
                 }
                 break;
             case 2:
-                if ($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) {
+                if ($isAvailable($user, $node)) {
                     $email = $this->user->email;
                     $email = Radius::GetUserName($email);
-                    $json_show = 'SSH 信息<br>地址：' . $node->server . '<br>' . '用户名：' . $email . '<br>密码：' . $this->user->passwd . '<br>支持方式：' . $node->method . '<br>备注：' . $node->info;
-
-                    return $this->view()->assign('json_show', $json_show)->display('user/nodeinfossh.tpl');
+                    $json_show = 'SSH 信息'
+                        . '<br>地址：' . $node->server
+                        . '<br>用户名：' . $email
+                        . '<br>密码：' . $this->user->passwd
+                        . '<br>支持方式：' . $node->method
+                        . '<br>备注：' . $node->info;
+                    return $this->view()
+                        ->assign('json_show', $json_show)
+                        ->display('user/nodeinfossh.tpl');
                 }
                 break;
             case 5:
-                if ($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) {
+                if ($isAvailable($user, $node)) {
                     $email = $this->user->email;
                     $email = Radius::GetUserName($email);
-
-                    $json_show = 'Anyconnect 信息<br>地址：' . $node->server . '<br>' . '用户名：' . $email . '<br>密码：' . $this->user->passwd . '<br>支持方式：' . $node->method . '<br>备注：' . $node->info;
-
-                    return $this->view()->assign('json_show', $json_show)->display('user/nodeinfoanyconnect.tpl');
-                }
-                break;
-            case 10:
-                if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
-                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass('URL', URL::class)->display('user/nodeinfo.tpl');
-                }
-                break;
-            case 13:
-                if ((($user->class >= $node->node_class && ($user->node_group == $node->node_group || $node->node_group == 0)) || $user->is_admin) && ($node->node_bandwidth_limit == 0 || $node->node_bandwidth < $node->node_bandwidth_limit)) {
-                    return $this->view()->assign('node', $node)->assign('user', $user)->assign('mu', $mu)->assign('relay_rule_id', $relay_rule_id)->registerClass('URL', URL::class)->display('user/nodeinfo.tpl');
+                    $json_show = 'Anyconnect 信息'
+                        . '<br>地址：' . $node->server
+                        . '<br>用户名：' . $email
+                        . '<br>密码：' . $this->user->passwd
+                        . '<br>支持方式：' . $node->method
+                        . '<br>备注：' . $node->info;
+                    return $this->view()
+                        ->assign('json_show', $json_show)
+                        ->display('user/nodeinfoanyconnect.tpl');
                 }
                 break;
             default:
