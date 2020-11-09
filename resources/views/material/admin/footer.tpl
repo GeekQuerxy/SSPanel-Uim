@@ -4,7 +4,6 @@
         {if $config['enable_analytics_code'] === true}{include file='analytics.tpl'}{/if}
     </div>
 </footer>
-
 <!-- js -->
 {if $config['sspanelAnalysis'] === true}
     <!-- Google Analytics -->
@@ -17,7 +16,6 @@
         var hostDomain = window.location.host || document.location.host || document.domain;
         ga('set', 'dimension1', hostDomain);
         ga('send', 'pageview');
-
         (function () {
             function perfops() {
                 var js = document.createElement('script');
@@ -35,11 +33,10 @@
     <script async src="https://www.google-analytics.com/analytics.js"></script>
     <!-- End Google Analytics -->
 {/if}
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/datatables.net@1.10.19"></script>
-<script src="//cdn.jsdelivr.net/gh/DataTables/DataTables@1.10.19/media/js/dataTables.material.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net@1.10.21"></script>
+<script src="//cdn.jsdelivr.net/gh/DataTables/DataTables@1.10.21/media/js/dataTables.material.min.js"></script>
 <script src="/theme/material/js/base.min.js"></script>
 <script src="/theme/material/js/project.min.js"></script>
-
 </body>
 </html>

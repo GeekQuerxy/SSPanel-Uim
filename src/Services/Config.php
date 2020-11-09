@@ -56,6 +56,7 @@ class Config
             'enable_flag'             => $_ENV['enable_flag'],
             'enable_kill'             => self::getconfig('Users.bool.enable_kill'),
             'custom_invite_price'     => self::getconfig('Register.int.custom_invite_price'),
+            'enable_change_email'     => $_ENV['enable_change_email'],
             'captcha_provider'        => $_ENV['captcha_provider'],
             'enable_email_verify'     => self::getconfig('Register.bool.Enable_email_verify'),
 

@@ -9,11 +9,9 @@
     <div class="container">
         <div class="col-lg-12 col-md-12">
             <section class="content-inner margin-top-no">
-
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-
                             <div class="form-group form-group-label">
                                 <label class="floating-label" for="number">类型</label>
                                 <select id="type" class="form-control maxwidth-edit" name="type">
@@ -21,7 +19,6 @@
                                     <option value="-2">支出</option>
                                 </select>
                             </div>
-
                             <div class="form-group form-group-label">
                                 <label class="floating-label" for="number">备注</label>
                                 <input class="form-control maxwidth-edit" id="code" type="text">
@@ -30,16 +27,12 @@
                                 <label class="floating-label" for="amount">金额</label>
                                 <input class="form-control maxwidth-edit" id="amount" type="text">
                             </div>
-
                         </div>
                     </div>
                 </div>
-
-
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
-
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-md-10 col-md-push-1">
@@ -52,17 +45,13 @@
                         </div>
                     </div>
                 </div>
-
                 {include file='dialog.tpl'}
-
+            </section>
         </div>
-
     </div>
 </main>
 
-
 {include file='admin/footer.tpl'}
-
 
 <script>
     window.addEventListener('load', () => {
@@ -90,19 +79,16 @@
                 error: jqXHR => {
                     $("#result").modal();
                     $$.getElementById('msg').innerHTML = `发生错误：${
-                            jqXHR.status
-                            }`;
+                        jqXHR.status
+                    }`;
                 }
             });
         }
-
         $("html").keydown(event => {
             if (event.keyCode === 13) {
                 login();
             }
         });
-
         $$.getElementById('submit').addEventListener('click', submit);
-
     })
 </script>

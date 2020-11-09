@@ -9,7 +9,6 @@
     <div class="container">
         <div class="col-lg-12 col-md-12">
             <section class="content-inner margin-top-no">
-
                 <div class="card">
                     <div class="card-main">
                         <div class="card-inner">
@@ -20,19 +19,15 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     {include file='table/table.tpl'}
                 </div>
-
                 <div class="fbtn-container">
                     <div class="fbtn-inner">
                         <a class="fbtn fbtn-lg fbtn-brand-accent waves-attach waves-circle waves-light"
                            href="/admin/auto/create">+</a>
-
                     </div>
                 </div>
-
                 <div aria-hidden="true" class="modal modal-va-middle fade" id="delete_modal" role="dialog"
                      tabindex="-1">
                     <div class="modal-dialog modal-xs">
@@ -57,13 +52,9 @@
                         </div>
                     </div>
                 </div>
-
                 {include file='dialog.tpl'}
-
-
+            </section>
         </div>
-
-
     </div>
 </main>
 
@@ -74,10 +65,7 @@
         deleteid = id;
         $("#delete_modal").modal();
     }
-
     {include file='table/js_1.tpl'}
-
-
     window.addEventListener('load', () => {
         function delete_id() {
             $.ajax({
@@ -103,10 +91,7 @@
                 }
             });
         }
-
         $$.getElementById('delete_input').addEventListener('click', delete_id);
-
         {include file='table/js_2.tpl'}
     })
-
 </script>

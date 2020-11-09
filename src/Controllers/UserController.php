@@ -25,11 +25,12 @@ use App\Models\DetectLog;
 use App\Models\DetectRule;
 use App\Models\TrafficLog;
 use App\Models\InviteCode;
+use App\Models\EmailVerify;
 use App\Models\UserSubscribeLog;
 use App\Utils\GA;
-use App\Utils\Pay;
 use App\Utils\URL;
 use App\Utils\Hash;
+use App\Utils\Check;
 use App\Utils\QQWry;
 use App\Utils\Tools;
 use App\Utils\Radius;
@@ -607,6 +608,78 @@ class UserController extends BaseController
         $user->save();
 
         $user->clean_link();
+
+        $res['ret'] = 1;
+        $res['msg'] = '修改成功';
+        return $response->withJson($res);
+    }
+
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
+    public function updateEmail($request, $response, $args)
+    {
+        if ($_ENV['enable_change_email'] !== true) {
+            $res['ret'] = 0;
+            $res['msg'] = '未啓用用戶自行修改郵箱功能';
+            return $response->withJson($res);
+        }
+        $newemail = trim($request->getParam('newemail'));
+        if ($newemail == '') {
+            $res['ret'] = 0;
+            $res['msg'] = '未填写邮箱';
+            return $response->withJson($res);
+        }
+        if (!Check::isEmailLegal($newemail)) {
+            $res['ret'] = 0;
+            $res['msg'] = '邮箱无效';
+            return $response->withJson($res);
+        }
+        $otheruser = User::where('email', $newemail)->first();
+        if ($otheruser != null) {
+            $res['ret'] = 0;
+            $res['msg'] = '邮箱已经被使用了';
+            return $response->withJson($res);
+        }
+        $user     = $this->user;
+        $oldemail = $user->email;
+        if ($newemail == $oldemail) {
+            $res['ret'] = 0;
+            $res['msg'] = '新邮箱不能和旧邮箱一样';
+            return $response->withJson($res);
+        }
+        if (Config::getconfig('Register.bool.Enable_email_verify')) {
+            $emailcode = $request->getParam('emailcode');
+            $mailcount = EmailVerify::where('email', '=', $newemail)->where('code', '=', $emailcode)->where('expire_in', '>', time())->first();
+            if ($mailcount == null) {
+                $res['ret'] = 0;
+                $res['msg'] = '您的邮箱验证码不正确';
+                return $response->withJson($res);
+            }
+        }
+        $antiXss = new AntiXSS();
+        $user->email = $antiXss->xss_clean($newemail);
+        $user->save();
+
+        $res['ret'] = 1;
+        $res['msg'] = '修改成功';
+        return $response->withJson($res);
+    }
+
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
+    public function updateUsername($request, $response, $args)
+    {
+        $newusername = $request->getParam('newusername');
+        $user = $this->user;
+        $antiXss = new AntiXSS();
+        $user->user_name = $antiXss->xss_clean($newusername);
+        $user->save();
 
         $res['ret'] = 1;
         $res['msg'] = '修改成功';

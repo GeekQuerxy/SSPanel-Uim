@@ -6,9 +6,7 @@
 //如需换行，直接换行即可，无需换行符
 //【新增/删除】config无需写入迁移附注
 $_ENV['config_migrate_notice'] =
-'enable_geetest_* 已变更为 enable_*_captcha
-又加回crisp，newIndex为true的暂时别更，没加完。溜了我要上班了
-telegrma_qrcode被重命名为qrcode
+'新增 enable_change_email 配置項
 ';
 $_ENV['version'] = 2;    //仅当涉及【需要修改config以外的文件】时才需要+1，站长勿动
 
@@ -85,6 +83,8 @@ $_ENV['auto_clean_min_money']       = 1;            //余额低于多少的0级�
 
 $_ENV['class_expire_reset_traffic'] = 0;            //等级到期时重置为的流量值，单位GB，小于0时不重置
 $_ENV['account_expire_delete_days'] = -1;           //账户到期几天之后会删除账户，小于0时不删除
+
+$_ENV['enable_change_email']        = true;         //是否允许用户更改賬戶郵箱
 
 #用户流量余量不足邮件提醒
 $_ENV['notify_limit_mode']          = 'per';        //false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒

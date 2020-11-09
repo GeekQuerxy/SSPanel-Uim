@@ -16,10 +16,6 @@ return function (SlimApp $app) {
     $app->get('/indexold',  App\Controllers\HomeController::class . ':indexold');
 
     // other
-    $app->get('/spay_back',             App\Services\Payment::class . ':notify');
-    $app->post('/spay_back',            App\Services\Payment::class . ':notify');
-    $app->get('/tomato_back/{type}',    App\Services\Payment::class . ':notify');
-    $app->post('/tomato_back/{type}',   App\Services\Payment::class . ':notify');
     $app->post('/notify',               App\Controllers\HomeController::class . ':notify');
 
     // Telegram
@@ -70,7 +66,10 @@ return function (SlimApp $app) {
         $this->post('/buy_invite',              App\Controllers\UserController::class . ':buyInvite');
         $this->post('/custom_invite',           App\Controllers\UserController::class . ':customInvite');
         $this->get('/edit',                     App\Controllers\UserController::class . ':edit');
+        $this->post('/email',                   App\Controllers\UserController::class . ':updateEmail');
+        $this->post('/username',                App\Controllers\UserController::class . ':updateUsername');
         $this->post('/password',                App\Controllers\UserController::class . ':updatePassword');
+        $this->post('/send',                    App\Controllers\AuthController::class . ':sendVerify');
         $this->post('/wechat',                  App\Controllers\UserController::class . ':updateWechat');
         $this->post('/ssr',                     App\Controllers\UserController::class . ':updateSSR');
         $this->post('/theme',                   App\Controllers\UserController::class . ':updateTheme');

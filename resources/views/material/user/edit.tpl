@@ -8,9 +8,7 @@
     </div>
     <div class="container">
         <section class="content-inner margin-top-no">
-
             <div class="col-xx-12 col-sm-6">
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -19,7 +17,6 @@
                                     <div class="card-heading">节点连接密码修改</div>
                                     <button class="btn btn-flat" id="ss-pwd-update"><span class="icon">check</span>&nbsp;</button>
                                 </div>
-
                                 <p>当前连接密码：<code id="ajax-user-passwd">{$user->passwd}</code>
                                     <button class="kaobei copy-text btn btn-subscription" type="button" data-clipboard-text="{$user->passwd}">
                                         点击拷贝
@@ -37,8 +34,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -77,7 +72,6 @@
                                     </ul>
                                 </div>
                             </div>
-
                             <div class="card-inner">
                                 <div class="cardbtn-edit">
                                     <div class="card-heading">协议&混淆设置</div>
@@ -100,9 +94,7 @@
                                         {/foreach}
                                     </ul>
                                 </div>
-
                             </div>
-
                             <div class="card-inner">
                                 <p>当前混淆方式：<code id="ajax-user-obfs" data-default="obfs">[{if URL::CanObfsConnect($user->obfs) >= 3}SS/SSR{elseif URL::CanObfsConnect($user->obfs) == 1}SSR{else}SS{/if}可连接] {$user->obfs}</code></p>
                                 <p>SS 和 SSR 支持的混淆类型有所不同，simple_obfs_* 为 SS 的混淆方式，其他为 SSR 的混淆方式</p>
@@ -121,7 +113,6 @@
                                     </ul>
                                 </div>
                             </div>
-
                             <div class="card-inner">
                                 <p>当前混淆参数：<code id="ajax-user-obfs-param">{$user->obfs_param}</code></p>
                                 <div class="form-group form-group-label">
@@ -129,11 +120,9 @@
                                     <input class="form-control maxwidth-edit" id="obfs-param" type="text">
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-
 				<div class="card margin-bottom-no">
 					<div class="card-main">
 						<div class="card-inner">
@@ -149,12 +138,57 @@
 						</div>
 					</div>
                 </div>
-
             </div>
-
-
             <div class="col-xx-12 col-sm-6">
-
+                {if $config['enable_change_email'] == true}
+                    <div class="card margin-bottom-no">
+                        <div class="card-main">
+                            <div class="card-inner">
+                                <div class="card-inner">
+                                    <div class="cardbtn-edit">
+                                        <div class="card-heading">账户邮箱修改</div>
+                                        <button class="btn btn-flat" id="email-update"><span class="icon">check</span>&nbsp;
+                                        </button>
+                                    </div>
+                                    <div class="form-group form-group-label">
+                                        <label class="floating-label" for="newemail">新邮箱</label>
+                                        <input class="form-control maxwidth-edit" id="newemail" type="text">
+                                    </div>
+                                    {if $config['enable_email_verify'] == true}
+                                        <div class="form-group form-group-label">
+                                            <label class="floating-label" for="email_code">邮箱验证码</label>
+                                            <input class="form-control maxwidth-auth" id="email_code" type="text"
+                                                onKeypress="javascript:if(event.keyCode == 32)event.returnValue = false;" autocomplete="one-time-code">
+                                        </div>
+                                        <div class="form-group form-group-label">
+                                            <button id="email_verify"
+                                                class="btn-reg btn btn-block btn-brand-accent waves-attach waves-light">
+                                                获取验证码
+                                            </button>
+                                        </div>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+                <div class="card margin-bottom-no">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="card-inner">
+                                <div class="cardbtn-edit">
+                                    <div class="card-heading">用戶名修改</div>
+                                    <button class="btn btn-flat" id="username-update"><span class="icon">check</span>&nbsp;
+                                    </button>
+                                </div>
+                                <div class="form-group form-group-label">
+                                    <label class="floating-label" for="newusername">新用戶名</label>
+                                    <input class="form-control maxwidth-edit" id="newusername" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -168,22 +202,18 @@
                                     <label class="floating-label" for="oldpwd">当前密码</label>
                                     <input class="form-control maxwidth-edit" id="oldpwd" type="password">
                                 </div>
-
                                 <div class="form-group form-group-label">
                                     <label class="floating-label" for="pwd">新密码</label>
                                     <input class="form-control maxwidth-edit" id="pwd" type="password">
                                 </div>
-
                                 <div class="form-group form-group-label">
                                     <label class="floating-label" for="repwd">确认新密码</label>
                                     <input class="form-control maxwidth-edit" id="repwd" type="password">
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -194,12 +224,10 @@
                                     </button>
                                 </div>
                                 <p>当前状态：<code id="ajax-block">{$Block}</code></p>
-
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -231,7 +259,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -270,7 +297,6 @@
                                                data="imtype">Discord</a></li>
                                     </ul>
                                 </div>
-
                                 <div class="form-group form-group-label">
                                     <label class="floating-label" for="wechat">在这输入联络方式账号</label>
                                     <input class="form-control maxwidth-edit" id="wechat" type="text">
@@ -279,7 +305,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -307,20 +332,17 @@
                                                data="ga-enable">要求验证</a></li>
                                     </ul>
                                 </div>
-
                                 <div class="form-group form-group-label">
                                     <div class="text-center">
                                         <div id="ga-qr" class="qr-center"></div>
                                         密钥：{$user->ga_token}
                                     </div>
                                 </div>
-
                                 <div class="form-group form-group-label">
                                     <label class="floating-label" for="code">测试一下</label>
                                     <input type="text" id="code" placeholder="输入验证器生成的数字来测试"
                                            class="form-control maxwidth-edit">
                                 </div>
-
                             </div>
                             <div class="card-action">
                                 <div class="card-action-btn pull-left">
@@ -336,7 +358,6 @@
                         </div>
                     </div>
                 </div>
-
                 {if $config['port_price']>=0 || $config['port_price_specify']>=0}
                     <div class="card margin-bottom-no">
                         <div class="card-main">
@@ -355,7 +376,6 @@
                                         <p>当前端口：<code id="ajax-user-port">{$user->port}</code></p>
                                     </div>
                                 {/if}
-
                                 {if $config['port_price_specify']>=0}
                                     <div class="card-inner">
                                         <div class="cardbtn-edit">
@@ -377,7 +397,6 @@
                         </div>
                     </div>
                 {/if}
-
                 {if $config['enable_telegram'] === true}
                     <div class="card margin-bottom-no">
                         <div class="card-main">
@@ -412,7 +431,6 @@
                         </div>
                     </div>
                 {/if}
-
                 <div class="card margin-bottom-no">
                     <div class="card-main">
                         <div class="card-inner">
@@ -426,7 +444,6 @@
                                 <div class="form-group form-group-label control-highlight-custom dropdown">
                                     <label class="floating-label" for="theme">主题</label>
                                     <button id="theme" type="button" class="form-control maxwidth-edit" data-toggle="dropdown" value="{$user->theme}">
-
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="mail">
                                         {foreach $themes as $theme}
@@ -441,29 +458,23 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
                 {include file='dialog.tpl'}
-
         </section>
     </div>
 </main>
-
 
 {include file='user/footer.tpl'}
 
 <script>
     $(function () {
-        new Clipboard('.copy-text');
+        new ClipboardJS('.copy-text');
     });
-
     $(".copy-text").click(function () {
         $("#result").modal();
         $$.getElementById('msg').innerHTML = '已复制到您的剪贴板。';
     });
 </script>
-
 {literal}
 <script>
     /*
@@ -487,32 +498,27 @@
                 i.style.display = 'block';
             }
         };
-
         const chooseSS = () => {
             hideFilterItem('ssr');
             showFilterItem('ss');
             showFilterItem('universal');
         };
-
         const chooseSSR = () => {
             hideFilterItem('ss');
             showFilterItem('ssr');
             showFilterItem('universal');
         };
-
         const chooseUniversal = () => {
             hideFilterItem('ss');
             hideFilterItem('ssr');
             showFilterItem('universal');
         };
-
         $$.getElementById('filter-btn-ss').addEventListener('click', chooseSS);
         $$.getElementById('filter-btn-ssr').addEventListener('click', chooseSSR);
         $$.getElementById('filter-btn-universal').addEventListener('click', chooseUniversal);
     })();
 </script>
 {/literal}
-
 {literal}
 <script>
     $(document).ready(function () {
@@ -544,7 +550,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#portspecify").click(function () {
@@ -575,7 +580,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#setpac").click(function () {
@@ -600,7 +604,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#pwd-update").click(function () {
@@ -629,25 +632,121 @@
 </script>
 {/literal}
 <script>
+    $(document).ready(function () {
+        $("#username-update").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "username",
+                dataType: "json",
+                data: {
+                    newusername: $$getValue('newusername')
+                },
+                success: (data) => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = data.msg;
+                },
+                error: (jqXHR) => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `${
+                        data.msg
+                    } 出现了一些错误`;
+                }
+            })
+        })
+    })
+</script>
+{if $config['enable_change_email'] == true}
+    <script>
+        $(document).ready(function () {
+            $("#email-update").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "email",
+                    dataType: "json",
+                    data: {
+                        {if $config['enable_email_verify'] == true}
+                            emailcode: $$getValue('email_code'),
+                        {/if}
+                        newemail: $$getValue('newemail')
+                    },
+                    success: (data) => {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = data.msg;
+                    },
+                    error: (jqXHR) => {
+                        $("#result").modal();
+                        $$.getElementById('msg').innerHTML = `${
+                            data.msg
+                        } 出现了一些错误`;
+                    }
+                })
+            })
+        })
+    </script>
+    {if $config['enable_email_verify'] == true}
+        <script>
+            var wait = 60;
+            function time(o) {
+                if (wait == 0) {
+                    o.removeAttr("disabled");
+                    o.text("获取验证码");
+                    wait = 60;
+                } else {
+                    o.attr("disabled", "disabled");
+                    o.text("重新发送(" + wait + ")");
+                    wait--;
+                    setTimeout(function () {
+                        time(o)
+                    },
+                    1000)
+                }
+            }
+            $(document).ready(function () {
+                $("#email_verify").click(function () {
+                    time($("#email_verify"));
+                    $.ajax({
+                        type: "POST",
+                        url: "send",
+                        dataType: "json",
+                        data: {
+                            email: $$getValue('newemail')
+                        },
+                        success: (data) => {
+                            if (data.ret) {
+                                $("#result").modal();
+                                $$.getElementById('msg').innerHTML = data.msg;
+                            } else {
+                                $("#result").modal();
+                                $$.getElementById('msg').innerHTML = data.msg;
+                            }
+                        },
+                        error: (jqXHR) => {
+                            $("#result").modal();
+                            $$.getElementById('msg').innerHTML = `${
+                                data.msg
+                            } 出现了一些错误`;
+                        }
+                    })
+                })
+            })
+        </script>
+    {/if}
+{/if}
+<script>
     var ga_qrcode = '{$user->getGAurl()}',
             qrcode1 = new QRCode(document.getElementById("ga-qr"));
 
     qrcode1.clear();
     qrcode1.makeCode(ga_qrcode);
-
     {if $config['enable_telegram'] === true}
-
     var telegram_qrcode = 'mod://bind/{$bind_token}';
-
     if ($$.getElementById("telegram-qr")) {
         let qrcode2 = new QRCode(document.getElementById("telegram-qr"));
         qrcode2.clear();
         qrcode2.makeCode(telegram_qrcode);
     }
-
     {/if}
 </script>
-
 {literal}
 <script>
     $(document).ready(function () {
@@ -678,7 +777,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#ssr-update").click(function () {
@@ -711,7 +809,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#relay-update").click(function () {
@@ -735,7 +832,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#unblock").click(function () {
@@ -766,7 +862,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#ga-test").click(function () {
@@ -789,7 +884,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#ga-set").click(function () {
@@ -812,7 +906,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         let newsspwd = Math.random().toString(36).substr(2);
@@ -873,7 +966,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#theme-update").click(function () {
@@ -905,7 +997,6 @@
         })
     })
 </script>
-
 <script>
     $(document).ready(function () {
         $("#method-update").click(function () {
@@ -936,12 +1027,10 @@
         })
     })
 </script>
-
 {/literal}
-
 <script>
     $(function () {
-        new Clipboard('.reset-link');
+        new ClipboardJS('.reset-link');
     });
     $(".reset-link").click(function () {
         $("#result").modal();
