@@ -17,6 +17,10 @@ use App\Utils\{
 };
 use voku\helper\AntiXSS;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Http\{
+    Request,
+    Response
+};
 
 /**
  *  LinkController
@@ -56,6 +60,11 @@ class LinkController extends BaseController
         return $NLink->token;
     }
 
+    /**
+     * @param Request   $request
+     * @param Response  $response
+     * @param array     $args
+     */
     public static function GetContent($request, $response, $args)
     {
         if (!$_ENV['Subscribe']) {
@@ -387,10 +396,10 @@ class LinkController extends BaseController
     /**
      * 响应内容
      *
-     * @param User   $user
-     * @param array  $response
-     * @param string $content  订阅内容
-     * @param string $filename 文件名
+     * @param User     $user
+     * @param Response $response
+     * @param string   $content  订阅内容
+     * @param string   $filename 文件名
      */
     public static function getBody($user, $response, $content, $filename): ResponseInterface
     {
