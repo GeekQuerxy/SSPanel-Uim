@@ -189,21 +189,6 @@ class ClientDownload extends Command
                 ],
             ],
         ],
-        /*
-        [
-            'name'      => 'Surfboard',
-            'tagMethod' => 'apkpure',
-            'gitRepo'   => 'https://apkpure.com/cn/surfboard/com.getsurfboard',
-            'savePath'  => 'public/clients/',
-            'downloads' => [
-                [
-                    'sourceName' => '',
-                    'saveName'   => 'Surfboard.apk',
-                    'apkpureUrl' => 'https://apkpure.com/cn/surfboard/com.getsurfboard/download?from=details'
-                ],
-            ],
-        ],
-        */
         [
             'name'      => 'ClashforAndroid',
             'tagMethod' => 'github_pre_release',
@@ -211,7 +196,7 @@ class ClientDownload extends Command
             'savePath'  => 'public/clients/',
             'downloads' => [
                 [
-                    'sourceName' => 'app-universal-release.apk',
+                    'sourceName' => 'app-premium-universal-release.apk',
                     'saveName'   => 'Clash-Android.apk',
                     'apkpureUrl' => ''
                 ],
@@ -293,7 +278,7 @@ class ClientDownload extends Command
                 echo '- 保存 ' . $fileName . ' 至 ' . $savePath . ' 失败.' . PHP_EOL;
             } else {
                 echo '- 保存 ' . $fileName . ' 至 ' . $savePath . ' 成功.' . PHP_EOL;
-                system('chown www:www ' . $savePath . $fileName);
+                system('chown ' . $_ENV['php_user_group'] . ' ' . $savePath . $fileName);
             }
             return true;
         } catch (Exception $e) {

@@ -67,8 +67,10 @@ class AppURI
                     'type'  => $item['headerType'],
                     'host'  => $item['host'],
                     'path'  => $item['path'],
-                    'tls'   => $item['tls']
+                    'tls'   => $item['tls'],
+                    'sni'	=> $item['sni']
                 ];
+
                 $return = ('vmess://' . base64_encode(
                     json_encode($node, 320)
                 ));
@@ -102,12 +104,15 @@ class AppURI
                             break;
                         }
                         $tls = ($item['tls'] == 'tls'
-                            ? ', tls=true, sni=' . $item['host']
+                                ? ', tls=true ,sni=' . $item['host']
+                                : '');
+                        $sni = ($item['sni']
+                            ? ', '.$item['sni']
                             : '');
                         $ws = ($item['net'] == 'ws'
                             ? ', ws=true, ws-path=' . $item['path'] . ', ws-headers=host:' . $item['host']
                             : '');
-                        $return = $item['remark'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', username = ' . $item['id'] . $ws . $tls;
+                        $return = $item['remark'] . ' = vmess, ' . $item['add'] . ', ' . $item['port'] . ', username = ' . $item['id'] . $ws . $tls . $sni;
                         break;
                     case 'trojan':
                         $return = ($item['remark'] . ' = trojan, ' . $item['address'] . ', ' . $item['port'] . ', password=' . $item['passwd']) . ", sni=" . $item['host'];
@@ -339,6 +344,9 @@ class AppURI
                     'cipher'  => 'auto',
                     'udp'     => true
                 ];
+                if ($item['sni']) {
+                    $return['servername'] = $item['sni'];
+                }
                 if ($item['net'] == 'ws') {
                     $return['network'] = 'ws';
                     $return['ws-path'] = $item['path'];
@@ -424,9 +432,9 @@ class AppURI
                     if ($item['verify_cert'] == false) {
                         $tls .= '&allowInsecure=1';
                     }
-                    if (isset($item['localserver'])) {
-                        $tls .= '&peer=' . $item['localserver'];
-                    }
+                    $tls .= ($item['sni']
+                        ? ('&peer=' . $item['sni'])
+                        : ('&peer=' . $item['host']));
                 }
                 $return = ('vmess://' . Tools::base64_url_encode('auto:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls . '&alterId=' . $item['aid']);
                 break;

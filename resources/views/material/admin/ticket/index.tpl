@@ -19,9 +19,38 @@
                         </div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-main">
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="userid"> 输入用戶 ID 快速创建新工单 </label>
+                                <input class="form-control maxwidth-edit" id="userid" type="text">
+                            </div>
+                        </div>
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="title"> 标题 </label>
+                                <input class="form-control maxwidth-edit" id="title" type="text">
+                            </div>
+                        </div>
+                        <div class="card-inner">
+                            <div class="form-group form-group-label">
+                                <label class="floating-label" for="content"> 内容 </label>
+                                <input class="form-control maxwidth-edit" id="content" type="text">
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-action-btn pull-left">
+                                <a class="btn btn-flat waves-attach waves-light" id="ticket_create"><span
+                                            class="icon">check</span>&nbsp;添加</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     {include file='table/table.tpl'}
                 </div>
+                {include file='dialog.tpl'}
         </div>
     </div>
 </main>
@@ -38,5 +67,26 @@
             order: [[1, 'desc']]
         })
         {include file='table/js_2.tpl'}
+        function createTicket() {
+            $.ajax({
+                type: "POST",
+                url: "/admin/ticket",
+                dataType: "json",
+                data: {
+                    content: $$getValue('content'),
+                    title: $$getValue('title'),
+                    userid: $$getValue('userid')
+                },
+                success: data => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = data.msg;
+                },
+                error: jqXHR => {
+                    $("#result").modal();
+                    $$.getElementById('msg').innerHTML = `${ldelim}jqXHR{rdelim} 发生了错误。`;
+                }
+            });
+        }
+        $$.getElementById('ticket_create').addEventListener('click', createTicket)
     });
 </script>
